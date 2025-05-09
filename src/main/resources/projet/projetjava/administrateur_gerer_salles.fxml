@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="400.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projet.projetjava.controleurs.AdministrateurGererSallesController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <Label text="Gérer les Salles">
+        <font>
+            <Font size="18.0" />
+        </font>
+    </Label>
+    <GridPane hgap="10.0" vgap="10.0">
+        <Label text="Numéro de salle:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="numeroSalleTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Label text="Capacité:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="capaciteSalleTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Label text="Équipement:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <TextField fx:id="equipementSalleTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    </GridPane>
+    <Button fx:id="ajouterSalleButton" text="Ajouter une salle" onAction="#handleAjouterSalle" />
+    <Button fx:id="modifierSalleButton" text="Modifier la salle sélectionnée" onAction="#handleModifierSalle" />
+    <TableView fx:id="sallesTableView" prefHeight="200.0" prefWidth="580.0">
+        <columns>
+            <TableColumn fx:id="numeroSalleColumn" prefWidth="100.0" text="Numéro" />
+            <TableColumn fx:id="capaciteSalleColumn" prefWidth="100.0" text="Capacité" />
+            <TableColumn fx:id="equipementSalleColumn" prefWidth="370.0" text="Équipement" />
+        </columns>
+    </TableView>
+    <Button fx:id="supprimerSalleButton" text="Supprimer la salle sélectionnée" onAction="#handleSupprimerSalle" />
+    <Button text="Retour au panneau d'administration" onAction="#handleRetourAdmin" />
+</VBox>

@@ -7,4 +7,6 @@ module projet.projetjava {
 
     opens projet.projetjava to javafx.fxml;
     exports projet.projetjava;
+    exports projet.projetjava.controleurs;
+    opens projet.projetjava.controleurs to javafx.fxml;
 }
