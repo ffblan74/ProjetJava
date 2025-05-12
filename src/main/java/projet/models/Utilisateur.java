@@ -1,11 +1,8 @@
-package projet;
+package projet.models;
 
-// Enum pour les rôles
-enum Role {
-    ETUDIANT, ENSEIGNANT, ADMINISTRATEUR
-}
+import projet.models.Role;
 
-abstract class Utilisateur {
+public abstract class Utilisateur {
     protected int idUtilisateur;
     protected String nom;
     protected String prenom;

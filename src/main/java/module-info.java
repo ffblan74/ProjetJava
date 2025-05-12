@@ -9,4 +9,6 @@ module projet.projetjava {
     exports projet;
     exports projet.controleurs;
     opens projet.controleurs to javafx.fxml;
+    exports projet.models;
+    opens projet.models to javafx.fxml;
 }

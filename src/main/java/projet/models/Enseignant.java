@@ -1,5 +1,7 @@
-package projet;
+package projet.models;
 
+import projet.models.Role;
+import projet.models.Utilisateur;
 import java.util.List;
 
 class Enseignant extends Utilisateur {

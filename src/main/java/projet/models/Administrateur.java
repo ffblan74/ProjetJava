@@ -1,4 +1,7 @@
-package projet;
+package projet.models;
+
+import projet.models.Role;
+import projet.models.Utilisateur;
 
 class Administrateur extends Utilisateur {
     private int idAdministrateur;

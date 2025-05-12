@@ -1,101 +1,69 @@
 package projet.controleurs;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-import projet.GestionnaireEmploiDuTemps;
-import projet.projetjava.Utilisateur; // Import de la classe Utilisateur
-import projet.projetjava.Etudiant;
-import projet.projetjava.Enseignant;
+import projet.models.Administrateur;
+import projet.models.Enseignant;
+import projet.models.Etudiant;
+import projet.models.Utilisateur;
+import projet.models.Role;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginController {
 
-    @FXML
-    private TextField identifiantTextField;
+    // Liste simulée d'utilisateurs enregistrés (normalement, tu utiliserais une base de données)
+    private List<Utilisateur> utilisateurs;
 
-    @FXML
-    private PasswordField motDePassePasswordField;
-
-    @FXML
-    private Button connexionButton;
-
-    @FXML
-    private Label messageErreurLabel;
-
-    private GestionnaireEmploiDuTemps gestionnaireEmploiDuTemps;
-
-    public void setGestionnaireEmploiDuTemps(GestionnaireEmploiDuTemps gestionnaire) {
-        this.gestionnaireEmploiDuTemps = gestionnaire;
+    public LoginController() {
+        utilisateurs = new ArrayList<>();
+        // Exemple d'utilisateurs
+        utilisateurs.add(new Etudiant(1, "Dupont", "Pierre", "pierre.dupont@mail.com", "motdepasse123", "Groupe A", 1));
+        utilisateurs.add(new Enseignant(2, "Durand", "Marie", "marie.durand@mail.com", "motdepasse123", new ArrayList<String>(), 2));
+        utilisateurs.add(new Administrateur(3, "Martin", "Jean", "jean.martin@mail.com", "admin123", 3));
     }
 
-    @FXML
-    public void handleConnexion(ActionEvent event) throws IOException {
-        String identifiant = identifiantTextField.getText();
-        String motDePasse = motDePassePasswordField.getText();
-
-        Utilisateur utilisateurConnecte = null;
-        if (gestionnaireEmploiDuTemps != null) {
-            for (Utilisateur utilisateur : gestionnaireEmploiDuTemps.getAllUtilisateurs()) {
-                if (utilisateur.getIdentifiant().equals(identifiant) && utilisateur.getMotDePasse().equals(motDePasse)) {
-                    utilisateurConnecte = utilisateur;
-                    break;
-                }
+    // Méthode pour se connecter
+    public Utilisateur login(String email, String motDePasse) {
+        for (Utilisateur utilisateur : utilisateurs) {
+            // Si l'email et le mot de passe correspondent
+            if (utilisateur.getEmail().equals(email) && utilisateur.getMotDePasse().equals(motDePasse)) {
+                System.out.println("Connexion réussie pour: " + utilisateur.getNom() + " " + utilisateur.getPrenom());
+                return utilisateur; // Retourne l'utilisateur authentifié
             }
-        } else {
-            messageErreurLabel.setText("Erreur: Gestionnaire non initialisé.");
-            return;
         }
+        System.out.println("Echec de la connexion: identifiants incorrects.");
+        return null; // Aucun utilisateur trouvé avec ces identifiants
+    }
 
-        if (utilisateurConnecte != null) {
-            messageErreurLabel.setText("");
-            // Rediriger l'utilisateur en fonction de son rôle
-            String role = utilisateurConnecte.getRole();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Parent root;
-            FXMLLoader loader;
-
-            switch (role) {
-                case "Etudiant":
-                    loader = new FXMLLoader(getClass().getResource("/vues/etudiant_emploi_du_temps.fxml"));
-                    root = loader.load();
-                    EtudiantEmploiDuTempsController etudiantController = loader.getController();
-                    etudiantController.setEtudiant((Etudiant) utilisateurConnecte);
-                    etudiantController.setGestionnaireEmploiDuTemps(gestionnaireEmploiDuTemps);
+    // Méthode pour rediriger l'utilisateur en fonction de son rôle
+    public void redirectToRolePage(Utilisateur utilisateur) {
+        if (utilisateur != null) {
+            switch (utilisateur.getRole()) {
+                case ETUDIANT:
+                    System.out.println("Redirection vers la page de l'étudiant.");
                     break;
-                case "Enseignant":
-                    loader = new FXMLLoader(getClass().getResource("/vues/enseignant_emploi_du_temps.fxml"));
-                    root = loader.load();
-                    EnseignantEmploiDuTempsController enseignantController = loader.getController();
-                    enseignantController.setEnseignant((Enseignant) utilisateurConnecte);
-                    enseignantController.setGestionnaireEmploiDuTemps(gestionnaireEmploiDuTemps);
+                case ENSEIGNANT:
+                    System.out.println("Redirection vers la page de l'enseignant.");
                     break;
-                case "Administrateur":
-                    loader = new FXMLLoader(getClass().getResource("/vues/administrateur_accueil.fxml"));
-                    root = loader.load();
-                    AdministrateurAccueilController adminController = loader.getController();
-                    adminController.setGestionnaireEmploiDuTemps(gestionnaireEmploiDuTemps);
+                case ADMINISTRATEUR:
+                    System.out.println("Redirection vers la page de l'administrateur.");
                     break;
                 default:
-                    messageErreurLabel.setText("Rôle d'utilisateur inconnu.");
-                    return;
+                    System.out.println("Rôle non reconnu.");
             }
+        }
+    }
 
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+    // Méthode de test pour vérifier la connexion
+    public static void main(String[] args) {
+        LoginController loginController = new LoginController();
 
-        } else {
-            messageErreurLabel.setText("Identifiant ou mot de passe incorrect.");
+        // Exemple de tentative de connexion
+        Utilisateur utilisateur = loginController.login("pierre.dupont@mail.com", "motdepasse123");
+
+        // Si la connexion est réussie, on redirige l'utilisateur en fonction de son rôle
+        if (utilisateur != null) {
+            loginController.redirectToRolePage(utilisateur);
         }
     }
 }
