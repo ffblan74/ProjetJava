@@ -29,4 +29,3 @@ class Etudiant extends Utilisateur {
         this.emploiDuTempsId = emploiDuTempsId;
     }
 }
-}

@@ -19,4 +19,3 @@ class Administrateur extends Utilisateur {
         this.idAdministrateur = idAdministrateur;
     }
 }
-}

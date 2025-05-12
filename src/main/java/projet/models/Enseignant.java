@@ -30,4 +30,3 @@ class Enseignant extends Utilisateur {
         this.idEnseignant = idEnseignant;
     }
 }
-}

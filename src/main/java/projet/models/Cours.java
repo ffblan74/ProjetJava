@@ -87,4 +87,3 @@ class Cours {
         this.horaireId = horaireId;
     }
 }
-}

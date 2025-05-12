@@ -1,69 +1,34 @@
 package projet.controleurs;
 
-import projet.models.Administrateur;
-import projet.models.Enseignant;
-import projet.models.Etudiant;
-import projet.models.Utilisateur;
-import projet.models.Role;
-
-import java.util.ArrayList;
-import java.util.List;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 
 public class LoginController {
 
-    // Liste simulée d'utilisateurs enregistrés (normalement, tu utiliserais une base de données)
-    private List<Utilisateur> utilisateurs;
+    @FXML
+    private TextField emailField;
 
-    public LoginController() {
-        utilisateurs = new ArrayList<>();
-        // Exemple d'utilisateurs
-        utilisateurs.add(new Etudiant(1, "Dupont", "Pierre", "pierre.dupont@mail.com", "motdepasse123", "Groupe A", 1));
-        utilisateurs.add(new Enseignant(2, "Durand", "Marie", "marie.durand@mail.com", "motdepasse123", new ArrayList<String>(), 2));
-        utilisateurs.add(new Administrateur(3, "Martin", "Jean", "jean.martin@mail.com", "admin123", 3));
-    }
+    @FXML
+    private PasswordField passwordField;
 
-    // Méthode pour se connecter
-    public Utilisateur login(String email, String motDePasse) {
-        for (Utilisateur utilisateur : utilisateurs) {
-            // Si l'email et le mot de passe correspondent
-            if (utilisateur.getEmail().equals(email) && utilisateur.getMotDePasse().equals(motDePasse)) {
-                System.out.println("Connexion réussie pour: " + utilisateur.getNom() + " " + utilisateur.getPrenom());
-                return utilisateur; // Retourne l'utilisateur authentifié
-            }
-        }
-        System.out.println("Echec de la connexion: identifiants incorrects.");
-        return null; // Aucun utilisateur trouvé avec ces identifiants
-    }
+    @FXML
+    private Button loginButton;
 
-    // Méthode pour rediriger l'utilisateur en fonction de son rôle
-    public void redirectToRolePage(Utilisateur utilisateur) {
-        if (utilisateur != null) {
-            switch (utilisateur.getRole()) {
-                case ETUDIANT:
-                    System.out.println("Redirection vers la page de l'étudiant.");
-                    break;
-                case ENSEIGNANT:
-                    System.out.println("Redirection vers la page de l'enseignant.");
-                    break;
-                case ADMINISTRATEUR:
-                    System.out.println("Redirection vers la page de l'administrateur.");
-                    break;
-                default:
-                    System.out.println("Rôle non reconnu.");
-            }
-        }
-    }
+    @FXML
+    private Label errorLabel;
 
-    // Méthode de test pour vérifier la connexion
-    public static void main(String[] args) {
-        LoginController loginController = new LoginController();
+    @FXML
+    private void handleLogin() {
+        String email = emailField.getText();
+        String password = passwordField.getText();
 
-        // Exemple de tentative de connexion
-        Utilisateur utilisateur = loginController.login("pierre.dupont@mail.com", "motdepasse123");
-
-        // Si la connexion est réussie, on redirige l'utilisateur en fonction de son rôle
-        if (utilisateur != null) {
-            loginController.redirectToRolePage(utilisateur);
+        if (email.equals("admin@example.com") && password.equals("admin")) {
+            errorLabel.setText("Login successful!");
+        } else {
+            errorLabel.setText("Invalid credentials.");
         }
     }
 }
