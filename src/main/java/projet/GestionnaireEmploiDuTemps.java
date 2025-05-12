@@ -1,4 +1,4 @@
-package projet.projetjava;
+package projet;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;

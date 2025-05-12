@@ -1,11 +1,11 @@
-package projet.projetjava;
+package projet;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import projet.projetjava.controleurs.LoginController;
+import projet.controleurs.LoginController;
 
 public class TimetableApp extends Application {
 

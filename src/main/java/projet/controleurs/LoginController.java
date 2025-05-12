@@ -1,4 +1,4 @@
-package projet.projetjava.controleurs;
+package projet.controleurs;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,7 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import projet.projetjava.GestionnaireEmploiDuTemps;
+import projet.GestionnaireEmploiDuTemps;
 import projet.projetjava.Utilisateur; // Import de la classe Utilisateur
 import projet.projetjava.Etudiant;
 import projet.projetjava.Enseignant;

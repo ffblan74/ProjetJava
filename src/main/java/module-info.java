@@ -5,8 +5,8 @@ module projet.projetjava {
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
 
-    opens projet.projetjava to javafx.fxml;
-    exports projet.projetjava;
-    exports projet.projetjava.controleurs;
-    opens projet.projetjava.controleurs to javafx.fxml;
+    opens projet to javafx.fxml;
+    exports projet;
+    exports projet.controleurs;
+    opens projet.controleurs to javafx.fxml;
 }
