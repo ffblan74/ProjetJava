@@ -1,34 +1,29 @@
 package projet;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
-        // Créer un Label simple
-        Label label = new Label("Hello, JavaFX!");
+    public void start(Stage primaryStage) throws Exception {
+        // Charger le fichier FXML
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/projet/login.fxml"));
+        Parent root = loader.load();
 
-        // Créer un conteneur (layout) et y ajouter le label
-        StackPane root = new StackPane();
-        root.getChildren().add(label);
+        // Créer la scène avec la racine chargée
+        Scene scene = new Scene(root, 300, 250);
 
-        // Créer une scène avec le conteneur et définir la taille
-        Scene scene = new Scene(root, 300, 200);
-
-        // Définir la scène dans la fenêtre
-        primaryStage.setTitle("Test JavaFX");
+        // Configurer la fenêtre principale
+        primaryStage.setTitle("Connexion");
         primaryStage.setScene(scene);
-
-        // Afficher la fenêtre
         primaryStage.show();
     }
 
     public static void main(String[] args) {
-        launch(args);  // Lancer l'application JavaFX
+        launch(args);
     }
 }

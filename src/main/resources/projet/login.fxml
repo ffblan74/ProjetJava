@@ -16,6 +16,6 @@
     <TextField fx:id="identifiantTextField" promptText="Votre identifiant" />
     <Label text="Mot de passe:" />
     <PasswordField fx:id="motDePassePasswordField" promptText="Votre mot de passe" />
-    <Button fx:id="connexionButton" text="Se connecter" onAction="#handleConnexion" />
-    <Label fx:id="messageErreurLabel" text="" style="-fx-text-fill: red;" />
+    <Button fx:id="connexionButton" text="Se connecter" onAction="#handleLogin" />
+    <Label fx:id="messageErreurLabel" text="" style="-fx-text-fill: #a34c6c;" />
 </VBox>
