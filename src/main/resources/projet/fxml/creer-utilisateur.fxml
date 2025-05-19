@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="400.0" prefWidth="600.0" spacing="15.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projet.controleurs.admin.CreerUtilisateurController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Créer un nouvel utilisateur" />
+    <GridPane hgap="10.0" vgap="10.0">
+        <Label text="Nom:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="nomField" promptText="Nom" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label text="Prénom:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="prenomField" promptText="Prénom" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <TextField fx:id="emailField" promptText="Email" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <Label text="Mot de passe:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <PasswordField fx:id="passwordField" promptText="Mot de passe" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+        <Label text="Rôle:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <ComboBox fx:id="roleComboBox" promptText="Sélectionner un rôle" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+    </GridPane>
+    <Button fx:id="creerUtilisateurButton" onAction="#handleCreerUtilisateur" text="Créer l'utilisateur" />
+    <Button fx:id="annulerCreationButton" text="Annuler" onAction="#handleAnnulerCreation"/>
+</VBox>
