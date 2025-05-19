@@ -5,19 +5,32 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 
 <BorderPane prefHeight="450.0" prefWidth="650.0"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="projet.controleurs.admin.AccueilAdminController">
     <top>
-        <Label text="Accueil Administrateur"
-               style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2a9df4;"
-               BorderPane.alignment="CENTER">
-            <padding>
-                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-            </padding>
-        </Label>
+        <HBox spacing="20.0" alignment="CENTER" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Accueil Administrateur"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2a9df4;">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                    </padding>
+                </Label>
+                <Pane HBox.hgrow="ALWAYS" />
+                <Label fx:id="nomUtilisateurLabel"
+                       text="Nom d'utilisateur"
+                       style="-fx-font-size: 16px; -fx-text-fill: #000;">
+                    <padding>
+                        <Insets right="20.0"/>
+                    </padding>
+                </Label>
+            </children>
+        </HBox>
     </top>
     <center>
         <FlowPane alignment="CENTER" hgap="20.0" vgap="20.0">

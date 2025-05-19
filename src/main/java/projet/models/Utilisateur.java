@@ -10,6 +10,8 @@ public abstract class Utilisateur {
     protected String motDePasse;
     protected Role role;
 
+    private static Utilisateur utilisateurConnecte;
+
     public Utilisateur(int idUtilisateur, String nom, String prenom, String email, String motDePasse, Role role) {
         this.idUtilisateur = idUtilisateur;
         this.nom = nom;
@@ -17,6 +19,18 @@ public abstract class Utilisateur {
         this.email = email;
         this.motDePasse = motDePasse;
         this.role = role;
+    }
+
+    public static void connecter(Utilisateur utilisateur) {
+        utilisateurConnecte = utilisateur;
+    }
+
+    public static Utilisateur getUtilisateurConnecte() {
+        return utilisateurConnecte;
+    }
+
+    public static void deconnecter() {
+        utilisateurConnecte = null;
     }
 
     public int getIdUtilisateur() {

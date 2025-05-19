@@ -6,12 +6,16 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import projet.models.Administrateur;
+import projet.models.Enseignant;
+import projet.models.Etudiant;
+import projet.models.Utilisateur;
+import projet.utils.NavigationUtil;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class LoginController {
     @FXML
@@ -26,57 +30,101 @@ public class LoginController {
     @FXML
     private Label errorLabel;
 
+    // Chemin vers le fichier CSV des utilisateurs
+    private static final String CHEMIN_UTILISATEURS = "src/main/resources/projet/csv/utilisateurs.csv";
+
+
+
+
     @FXML
     private void handleLogin() {
-        String email = emailField.getText();
-        String password = passwordField.getText();
+        String email = emailField.getText().trim();
+        String password = passwordField.getText().trim();
         Stage currentStage = (Stage) emailField.getScene().getWindow();
 
-        boolean loggedIn = false;
+        try {
+            // Rechercher un utilisateur correspondant à l'email
+            List<String[]> lignes = CRUDcsvController.rechercher(CHEMIN_UTILISATEURS, 3, email);
 
-        try (InputStream inputStream = getClass().getResourceAsStream("/projet/csv/utilisateurs.csv");
-             InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-             BufferedReader reader = new BufferedReader(streamReader)) {
+            for (String[] ligne : lignes) {
+                if (ligne[4].equals(password)) { // Vérification du mot de passe
+                    System.out.println("fdklsmfj"+"  "+ligne[4]+"  "+password);
+                    // Convertir la ligne CSV en une instance de sous-classe appropriée
+                    Utilisateur utilisateur = convertirDepuisCSV(ligne);
+                    System.out.println("utilisateur : " + utilisateur.getNom() + " " + utilisateur.getPrenom());
 
-            String line;
-            boolean firstLine = true; // Pour ignorer l'en-tête
-            while ((line = reader.readLine()) != null) {
-                if (firstLine) {
-                    firstLine = false;
-                    continue;
-                }
-                String[] parts = line.split(";");
-                if (parts.length == 6) {
-                    String storedEmail = parts[3];
-                    String storedPassword = parts[4];
-                    String role = parts[5];
+                    // Définir l'utilisateur comme connecté
+                    Utilisateur.connecter(utilisateur);
 
-                    if (email.equals(storedEmail) && password.equals(storedPassword)) {
-                        loggedIn = true;
-                        if (role.equals("ETUDIANT")) {
-                            NavigationUtil.ouvrirNouvelleFenetre("/projet/fxml/accueil-eleve.fxml", "Accueil Élève", currentStage);
-                        } else if (role.equals("ENSEIGNANT")) {
-                            NavigationUtil.ouvrirNouvelleFenetre("/projet/fxml/accueil-professeur.fxml", "Accueil Professeur", currentStage);
-                        } else if (role.equals("ADMINISTRATEUR")) {
-                            NavigationUtil.ouvrirNouvelleFenetre("/projet/fxml/accueil-admin.fxml", "Accueil Admin", currentStage);
-                        }
-                        break; // Utilisateur trouvé et connecté
+                    switch (utilisateur.getRole()) {
+                        case ETUDIANT:
+                            NavigationUtil.ouvrirNouvelleFenetre(
+                                    "/projet/fxml/accueil-eleve.fxml",
+                                    "Accueil Élève",
+                                    currentStage,
+                                    utilisateur // Passe l'utilisateur ici
+                            );
+                            break;
+                        case ENSEIGNANT:
+                            NavigationUtil.ouvrirNouvelleFenetre(
+                                    "/projet/fxml/accueil-professeur.fxml",
+                                    "Accueil Professeur",
+                                    currentStage,
+                                    utilisateur // Passe l'utilisateur ici
+                            );
+                            break;
+                        case ADMINISTRATEUR:
+                            NavigationUtil.ouvrirNouvelleFenetre(
+                                    "/projet/fxml/accueil-admin.fxml",
+                                    "Accueil Administrateur",
+                                    currentStage,
+                                    utilisateur // Passe l'utilisateur ici
+                            );
+                            break;
+                        default:
+                            errorLabel.setText("Rôle inconnu.");
+                            break;
                     }
+                    return;
+
                 }
             }
 
+            errorLabel.setText("Nom d'utilisateur ou mot de passe incorrect.");
         } catch (IOException e) {
-            errorLabel.setText("Erreur lors de la lecture du fichier utilisateurs.csv.");
+            errorLabel.setText("Erreur lors de la validation.");
             e.printStackTrace();
-            return;
-        } catch (NullPointerException e) {
-            errorLabel.setText("Fichier utilisateurs.csv non trouvé.");
-            e.printStackTrace();
-            return;
-        }
-
-        if (!loggedIn) {
-            errorLabel.setText("Invalid credentials.");
         }
     }
+
+
+    public static Utilisateur convertirDepuisCSV(String[] data) {
+        int idUtilisateur = Integer.parseInt(data[0]);
+        String nom = data[1];
+        String prenom = data[2];
+        String email = data[3];
+        String motDePasse = data[4];
+        String role = data[5];
+
+
+        switch (role) {
+            case "ETUDIANT":
+                String groupe = data[8].equals("None") ? null : data[8];
+                Integer emploiDuTempsId = data[9].equals("None") ? null : Integer.parseInt(data[9]);
+                return new Etudiant(idUtilisateur, nom, prenom, email, motDePasse, groupe, emploiDuTempsId);
+
+            case "ENSEIGNANT":
+                List<String> matieres = data[10].equals("None") ? new ArrayList<>() : new ArrayList<>(Arrays.asList(data[10].replace("[", "").replace("]", "").replace("\"", "").split(",")));
+                Integer idEnseignant = data[7].equals("None") ? null : Integer.parseInt(data[7]);
+                return new Enseignant(idUtilisateur, nom, prenom, email, motDePasse, matieres, idEnseignant);
+
+            case "ADMINISTRATEUR":
+                Integer idAdministrateur = data[6].equals("None") ? null : Integer.parseInt(data[6]);
+                return new Administrateur(idUtilisateur, nom, prenom, email, motDePasse, idAdministrateur);
+
+            default:
+                throw new IllegalArgumentException("Rôle inconnu : " + role);
+        }
+    }
+
 }

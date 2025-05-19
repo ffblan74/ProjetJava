@@ -1,14 +1,5 @@
-idUtilisateur;nom;prenom;email;motDePasse;role
-1;Blanchier;Félix;felix.blanchier@example.com;motdepasse1;ETUDIANT
-2;Durand;Jean;jean.durand@example.com;motdepasse2;ENSEIGNANT
-3;Martin;Sophie;sophie.martin@example.com;adminpass;ADMINISTRATEUR
-4;Lefevre;Pierre;pierre.lefevre@example.com;secret;ETUDIANT
-5;Garcia;Anne;anne.garcia@example.com;prof123;ENSEIGNANT
-6;M;S;admin;admin;ADMINISTRATEUR
-7;test;test;test@test.com;fjdqsklfjqdklsm;ETUDIANT
-8;test;test;test;test;ENSEIGNANT
-9;fd;fdsq;fdsq;fds;ENSEIGNANT
-10;fdsq;fdsq;fdsq;fdqs;ENSEIGNANT
-11;fds;fds;fds@fd.com;fdsfdsq;ETUDIANT
-12;ozaurioez;rezaraz;reazreza@e.com;jfklmdqjfiojaziodvk,ld;ENSEIGNANT
-13;fds;fds;fdsq@fds.com;fdkopakmfjoiprsdfoidjkls23;ENSEIGNANT
+idUtilisateur;nom;prenom;email;motDePasse;role;idAdministrateur;idEnseignant;groupe;emploiDuTempsId;matiereEnseignee
+1;Dupont;Jean;jean.dupont@email.com;password123;ETUDIANT;None;None;Groupe A;1;None
+2;Morel;Pauline;pauline.morel@email.com;password456;ENSEIGNANT;None;1;None;None;[\"Mathématiques\",\"Physique\"]
+3;Martin;Alice;alice.martin@email.com;password789;ADMINISTRATEUR;1;None;None;None;None
+4;admin;admin;admin@;admin;ADMINISTRATEUR;2;None;None;None;None

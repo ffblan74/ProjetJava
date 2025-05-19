@@ -15,7 +15,7 @@
     </padding>
     <Label text="Connexion" style="-fx-font-size: 20;"/>
     <Label text="Identifiant:"/>
-    <TextField fx:id="emailField" promptText="felix.blanchier@eleve.isep.fr"/>
+    <TextField fx:id="emailField" promptText="prenom.nom@example.fr"/>
     <Label text="Mot de passe:"/>
     <PasswordField fx:id="passwordField" promptText="Votre mot de passe"/>
     <Button fx:id="loginButton" text="Se connecter" onAction="#handleLogin"/>
