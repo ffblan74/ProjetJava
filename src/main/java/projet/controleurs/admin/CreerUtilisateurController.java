@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
+import projet.controleurs.CRUDcsvController;
 import projet.controleurs.NavigationUtil;
 
 import java.io.BufferedReader;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.List;
 
 public class CreerUtilisateurController {
 
@@ -56,54 +58,54 @@ public class CreerUtilisateurController {
 
         // Validation des champs
         if (!champsValides(email, password)) {
-            return; // Arrête l'exécution si les validations échouent
+            return;
         }
 
         System.out.println("Tentative de création de l'utilisateur : " + prenom + " " + nom +
                 " (" + email + ") avec le rôle : " + role);
 
         String cheminFichier = "src/main/resources/projet/csv/utilisateurs.csv";
-        int prochainId = 1;
 
         try {
-            // Lire le dernier ID depuis le fichier (si le fichier existe)
-            if (Files.exists(Paths.get(cheminFichier))) {
-                try (BufferedReader reader = new BufferedReader(new FileReader(cheminFichier))) {
-                    String ligne;
-                    String dernierIdStr = null;
-                    while ((ligne = reader.readLine()) != null) {
-                        String[] parts = ligne.split(";");
-                        if (parts.length > 0 && parts[0].matches("\\d+")) {
-                            dernierIdStr = parts[0];
-                        }
-                    }
-                    if (dernierIdStr != null) {
+            // Lire les utilisateurs existants
+            List<String[]> utilisateurs = CRUDcsvController.lire(cheminFichier);
+
+            // Déterminer le prochain ID
+            int prochainId = 1;
+            if (!utilisateurs.isEmpty()) {
+                try {
+                    // Récupérer le dernier ID de la dernière ligne
+                    String[] derniereLigne = utilisateurs.get(utilisateurs.size() - 1);
+                    String dernierIdStr = derniereLigne[0]; // Id est dans la première colonne
+                    if (dernierIdStr.matches("\\d+")) {
                         prochainId = Integer.parseInt(dernierIdStr) + 1;
                     }
-                } catch (IOException e) {
-                    System.err.println("Erreur lors de la lecture de l'ID : " + e.getMessage());
-                    // Continuer avec l'ID par défaut
+                } catch (Exception e) {
+                    System.err.println("Erreur lors de la détermination du prochain ID : " + e.getMessage());
                 }
             }
 
-            String ligneCSV = String.join(";", Arrays.asList(
+            // Créer la nouvelle ligne pour l'utilisateur
+            String[] nouvelleLigne = {
                     String.valueOf(prochainId),
                     nom,
                     prenom,
                     email,
                     password,
                     role
-            ));
+            };
 
-            if (!Files.exists(Paths.get(cheminFichier))) {
-                Files.write(Paths.get(cheminFichier), "idUtilisateur;nom;prenom;email;motDePasse;role\n".getBytes(), StandardOpenOption.CREATE);
-            }
-
-            Files.write(Paths.get(cheminFichier), ("\n" + ligneCSV).getBytes(), StandardOpenOption.APPEND);
+            // Ajouter la nouvelle ligne au fichier CSV
+            CRUDcsvController.ajouter(cheminFichier, nouvelleLigne);
 
             System.out.println("Utilisateur ajouté au fichier CSV avec l'ID : " + prochainId);
 
-            NavigationUtil.ouvrirNouvelleFenetre("/projet/fxml/accueil-admin.fxml", "Accueil Admin", (Stage) creerUtilisateurButton.getScene().getWindow());
+            // Retour à l'accueil admin
+            NavigationUtil.ouvrirNouvelleFenetre(
+                    "/projet/fxml/accueil-admin.fxml",
+                    "Accueil Admin",
+                    (Stage) creerUtilisateurButton.getScene().getWindow()
+            );
 
         } catch (IOException e) {
             System.err.println("Erreur lors de l'écriture dans le fichier CSV : " + e.getMessage());
