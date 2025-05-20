@@ -1,3 +1,5 @@
 idNotification;dateCreation;message;type;destinataireId;destinataireRole
 1;2024-01-22 15:30:00;Cours de Mathématiques déplacé;Notification;1;ETUDIANT
 2;2024-01-23 08:15:00;Salle B202 doublement réservée;Alerte;2;ENSEIGNANT
+3;2024-05-20 10:00:00;Nouvel emploi du temps disponible;Notification;7;ETUDIANT
+4;2024-05-20 11:30:00;Séminaire sur l'IA;Information;None;TOUS
