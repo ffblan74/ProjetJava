@@ -3,7 +3,7 @@ package projet.models;
 import projet.models.Role;
 import projet.models.Utilisateur;
 
-class Etudiant extends Utilisateur {
+public class Etudiant extends Utilisateur {
     private String groupe;
     private int emploiDuTempsId;
 

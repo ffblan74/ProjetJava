@@ -11,7 +11,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Charger le fichier FXML
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/projet/login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/projet/fxml/login.fxml"));
         Parent root = loader.load();
 
         // Créer la scène avec la racine chargée

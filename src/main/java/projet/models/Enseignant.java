@@ -4,7 +4,7 @@ import projet.models.Role;
 import projet.models.Utilisateur;
 import java.util.List;
 
-class Enseignant extends Utilisateur {
+public class Enseignant extends Utilisateur {
     private List<String> matiereEnseignee;
     private int idEnseignant;
 
