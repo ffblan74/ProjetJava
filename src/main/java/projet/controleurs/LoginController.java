@@ -109,18 +109,16 @@ public class LoginController {
 
         switch (role) {
             case "ETUDIANT":
-                String groupe = data[8].equals("None") ? null : data[8];
-                Integer emploiDuTempsId = data[9].equals("None") ? null : Integer.parseInt(data[9]);
+                String groupe = data[6].equals("None") ? null : data[6];
+                Integer emploiDuTempsId = data[8].equals("None") ? null : Integer.parseInt(data[8]);
                 return new Etudiant(idUtilisateur, nom, prenom, email, motDePasse, groupe, emploiDuTempsId);
 
             case "ENSEIGNANT":
-                List<String> matieres = data[10].equals("None") ? new ArrayList<>() : new ArrayList<>(Arrays.asList(data[10].replace("[", "").replace("]", "").replace("\"", "").split(",")));
-                Integer idEnseignant = data[7].equals("None") ? null : Integer.parseInt(data[7]);
-                return new Enseignant(idUtilisateur, nom, prenom, email, motDePasse, matieres, idEnseignant);
+                List<String> matiereEnseignee = data[9].equals("None") ? new ArrayList<>() : new ArrayList<>(Arrays.asList(data[9].replace("[", "").replace("]", "").replace("\"", "").split(",")));
+                return new Enseignant(idUtilisateur, nom, prenom, email, motDePasse, matiereEnseignee);
 
             case "ADMINISTRATEUR":
-                Integer idAdministrateur = data[6].equals("None") ? null : Integer.parseInt(data[6]);
-                return new Administrateur(idUtilisateur, nom, prenom, email, motDePasse, idAdministrateur);
+                return new Administrateur(idUtilisateur, nom, prenom, email, motDePasse);
 
             default:
                 throw new IllegalArgumentException("Rôle inconnu : " + role);
