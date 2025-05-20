@@ -1,34 +1,48 @@
 package projet.controleurs;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Label;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class LoginController {
 
     @FXML
-    private TextField emailField;
+    private TextField identifiantTextField;
 
     @FXML
-    private PasswordField passwordField;
+    private PasswordField motDePassePasswordField;
 
     @FXML
-    private Button loginButton;
+    private Label messageErreurLabel;
 
     @FXML
-    private Label errorLabel;
+    public void handleConnexion(ActionEvent event) {
+        String identifiant = identifiantTextField.getText();
+        String motDePasse = motDePassePasswordField.getText();
 
-    @FXML
-    private void handleLogin() {
-        String email = emailField.getText();
-        String password = passwordField.getText();
-
-        if (email.equals("admin@example.com") && password.equals("admin")) {
-            errorLabel.setText("Login successful!");
+        if (identifiant.equals("admin@mail.fr") && motDePasse.equals("admin")) {
+            try {
+                Parent adminAccueilRoot = FXMLLoader.load(getClass().getResource("/fxml/admin_accueil.fxml"));
+                Scene adminAccueilScene = new Scene(adminAccueilRoot);
+                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                currentStage.setScene(adminAccueilScene);
+                currentStage.setTitle("Accueil Administrateur");
+                currentStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                messageErreurLabel.setText("Erreur lors du chargement de l'accueil admin.");
+            }
         } else {
-            errorLabel.setText("Invalid credentials.");
+            messageErreurLabel.setText("Identifiant ou mot de passe incorrect.");
         }
     }
 }

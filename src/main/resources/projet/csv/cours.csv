@@ -1,0 +1,6 @@
+idCours;nomMatiere;codeCours;dureeMinutes;enseignantId;salleId;horaireId
+1;Mathématiques;MAT101;90;1;101;1
+2;Physique;PHY201;120;2;102;2
+3;Informatique;INF301;150;1;103;3
+4;Chimie;CHM102;120;3;101;4
+5;Histoire;HIS201;90;2;102;5

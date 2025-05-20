@@ -1,14 +1,13 @@
-module projet.projetjava {
+module projet {
     requires javafx.controls;
     requires javafx.fxml;
+    requires itextpdf;
 
-    requires org.controlsfx.controls;
-    requires org.kordamp.bootstrapfx.core;
+    opens projet_java.model to com.fasterxml.jackson.databind;
+    opens projet_java.view to javafx.fxml;
 
-    opens projet to javafx.fxml;
     exports projet;
-    exports projet.controleurs;
-    opens projet.controleurs to javafx.fxml;
     exports projet.models;
-    opens projet.models to javafx.fxml;
+    exports projet.controleurs;
+    exports projet.utils;
 }

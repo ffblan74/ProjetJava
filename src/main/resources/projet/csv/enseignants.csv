@@ -1,0 +1,4 @@
+idUtilisateur;nom;prenom;email;motDePasse;matiereEnseignee;idEnseignant
+1;Jean;Jean;jean@prof.com;1234;Mathématiques;Informatique;1
+2;Danre;Hippolyte;hippolyte@prof.com;1234;Physique;Histoire;2
+3;Blanchier;Felix;felix@prof.com;1234;Informatique;3

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      spacing="10"
+      padding="20">
+
+    <Label text="Créer un nouveau cours" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-margin-bottom: 10px;"/>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="Matière :" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="matiereTextField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Jour :" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="jourComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Heure de début (HH:MM) :" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="heureDebutTextField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Durée (en minutes) :" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="dureeTextField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Classe :" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="classeComboBox" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <Label text="Salle :" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="salleComboBox" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-margin-top: 20px;">
+    </HBox>
+
+</VBox>
