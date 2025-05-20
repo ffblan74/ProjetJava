@@ -8,8 +8,10 @@ import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+// import javafx.scene.layout.StackPane; // Plus besoin
+// import javafx.scene.Node;              // Plus besoin
+// import javafx.fxml.FXMLLoader;         // Plus besoin
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import projet.controleurs.CRUDcsvController;
 import projet.models.Role;
 import projet.models.Utilisateur;
@@ -17,72 +19,83 @@ import projet.utils.NavigationUtil;
 import projet.utils.Transmissible;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AccueilAdminController implements Transmissible {
+public class AccueilUtilisateurController implements Transmissible {
 
-    @FXML
-    private Button creerCoursButton;
-    @FXML
-    private Button modifierEmploiDuTempsButton;
-    @FXML
-    private Button gererCreneauxButton;
-    @FXML
-    private Button affecterEnseignantsButton;
-    @FXML
-    private Button gererSallesButton;
-    @FXML
-    private Button controlerConflitsButton;
-    @FXML
-    private Button statistiquesSallesButton;
-    @FXML
-    private Button statistiquesEnseignantsButton;
-    @FXML
-    private Button gererUtilisateursButton;
-    @FXML
-    private TableView<Utilisateur> tableViewUtilisateurs;
+    @FXML private Button btnGererUtilisateurs;
+    @FXML private Button btnGererCours;
+    @FXML private Button btnGererSalles;
+    @FXML private Button btnGererEmploiDuTemps;
 
-    @FXML
-    private TableColumn<Utilisateur, Integer> colIdUtilisateur;
-    @FXML
-    private TableColumn<Utilisateur, String> colNom;
-    @FXML
-    private TableColumn<Utilisateur, String> colPrenom;
-    @FXML
-    private TableColumn<Utilisateur, String> colEmail;
-    @FXML
-    private TableColumn<Utilisateur, String> colRole;
-    @FXML
-    private TableColumn<Utilisateur, Void> colActions;
+    // @FXML private StackPane contentPane; // Plus besoin
 
-    @FXML
-    private Label nomUtilisateurLabel;
+    @FXML private TableView<Utilisateur> tableViewUtilisateurs;
+    @FXML private TableColumn<Utilisateur, Integer> colIdUtilisateur;
+    @FXML private TableColumn<Utilisateur, String> colNom;
+    @FXML private TableColumn<Utilisateur, String> colPrenom;
+    @FXML private TableColumn<Utilisateur, String> colEmail;
+    @FXML private TableColumn<Utilisateur, String> colRole;
+    @FXML private TableColumn<Utilisateur, Void> colActions;
+    @FXML private Button creerUtilisateurButton;
+
+    @FXML private Label nomUtilisateurLabel;
     private Utilisateur utilisateurConnecte;
 
     private static final String CHEMIN_FICHIER_UTILISATEURS = "src/main/resources/projet/csv/utilisateurs.csv";
-    private static final String CSV_EN_TETE = "idUtilisateur;nom;prenom;email;motDePasse;role;groupe;emploiDuTempsId;matiereEnseignee";
-
-    // Map pour stocker les données CSV complètes (y compris les champs non représentés dans l'objet Utilisateur)
     private Map<Integer, String[]> donneesCSVCompletes = new HashMap<>();
 
     @FXML
     public void initialize() {
+        if (Utilisateur.getUtilisateurConnecte() != null) {
+            this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
+            afficherNomUtilisateur();
+        }
+
+        initialiserGestionUtilisateurs();
+        chargerUtilisateurs();
+    }
+
+    private void initialiserGestionUtilisateurs() {
         colIdUtilisateur.setCellValueFactory(new PropertyValueFactory<>("idUtilisateur"));
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colRole.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRole().name()));
-
         ajouterBoutonsActions();
-        chargerUtilisateurs();
+    }
 
-        if (Utilisateur.getUtilisateurConnecte() != null) {
+    @Override
+    public void transmettreDonnees(Object data) {
+        if (data instanceof Utilisateur) {
+            if (Utilisateur.getUtilisateurConnecte() == null || !Utilisateur.getUtilisateurConnecte().equals(data)) {
+                Utilisateur.connecter((Utilisateur) data);
+            }
             this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
             afficherNomUtilisateur();
+            chargerUtilisateurs();
+        } else if (data instanceof String && ((String) data).equals("refresh")) {
+            chargerUtilisateurs();
+            afficherNomUtilisateur();
+        } else {
+            if (Utilisateur.getUtilisateurConnecte() != null) {
+                this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
+                afficherNomUtilisateur();
+                chargerUtilisateurs();
+            } else {
+                System.err.println("Aucun utilisateur connecté transmis à AccueilAdminController, ou données inattendues.");
+                NavigationUtil.ouvrirNouvelleFenetre("/projet/fxml/login.fxml", "Connexion", (Stage) nomUtilisateurLabel.getScene().getWindow(), null);
+            }
+        }
+    }
+
+    private void afficherNomUtilisateur() {
+        if (utilisateurConnecte != null) {
+            nomUtilisateurLabel.setText("Bonjour, " + utilisateurConnecte.getNom() + " " + utilisateurConnecte.getPrenom());
+        } else {
+            nomUtilisateurLabel.setText("Utilisateur inconnu");
         }
     }
 
@@ -97,12 +110,9 @@ public class AccueilAdminController implements Transmissible {
                 return;
             }
 
-            // Vérifier et ajouter l'en-tête si manquant
-            if (lignesUtilisateurs.size() > 0 && !lignesUtilisateurs.get(0)[0].equals("idUtilisateur")) {
-                System.err.println("En-tête CSV manquante ou incorrecte dans utilisateurs.csv.");
-            }
+            int startIndex = (lignesUtilisateurs.size() > 0 && lignesUtilisateurs.get(0)[0].equalsIgnoreCase("idUtilisateur")) ? 1 : 0;
 
-            for (int i = 1; i < lignesUtilisateurs.size(); i++) {
+            for (int i = startIndex; i < lignesUtilisateurs.size(); i++) {
                 String[] ligne = lignesUtilisateurs.get(i);
 
                 if (ligne.length >= 6) {
@@ -172,7 +182,7 @@ public class AccueilAdminController implements Transmissible {
 
         if (ligneCSVComplete == null) {
             System.err.println("Erreur: Données CSV complètes introuvables pour l'utilisateur ID: " + utilisateur.getIdUtilisateur());
-            NavigationUtil.afficherErreur("Impossible de récupérer les informations complètes de l'utilisateur pour la modification.");
+            NavigationUtil.afficherErreur("Erreur de données. Impossible de récupérer les informations complètes de l'utilisateur pour la modification.");
             return;
         }
 
@@ -207,85 +217,75 @@ public class AccueilAdminController implements Transmissible {
         }
     }
 
-    @Override
-    public void transmettreDonnees(Object data) {
-        if (data instanceof Utilisateur) {
-            if (Utilisateur.getUtilisateurConnecte() == null || !Utilisateur.getUtilisateurConnecte().equals(data)) {
-                Utilisateur.connecter((Utilisateur) data);
-            }
-            this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
-            afficherNomUtilisateur();
-            chargerUtilisateurs();
-        } else if (data instanceof String && ((String) data).equals("refresh")) {
-            chargerUtilisateurs();
-            afficherNomUtilisateur();
-        } else {
-            if (Utilisateur.getUtilisateurConnecte() != null) {
-                this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
-                afficherNomUtilisateur();
-                chargerUtilisateurs();
-            } else {
-                System.err.println("Aucun utilisateur connecté transmis à AccueilAdminController, ou données inattendues.");
-            }
-        }
-    }
-
-    private void afficherNomUtilisateur() {
-        if (utilisateurConnecte != null) {
-            nomUtilisateurLabel.setText("Bonjour, " + utilisateurConnecte.getNom() + " " + utilisateurConnecte.getPrenom());
-        } else {
-            nomUtilisateurLabel.setText("Utilisateur inconnu");
-        }
+    @FXML
+    private void handleGererUtilisateurs(ActionEvent event) {
+        System.out.println("Bouton 'Gérer les Utilisateurs' cliqué !");
+        NavigationUtil.ouvrirNouvelleFenetre(
+                "/projet/fxml/admin/accueil-admin-gerer-utilisateur.fxml", // Le chemin vers ta nouvelle page de gestion des utilisateurs
+                "Gérer les Utilisateurs",
+                (Stage) btnGererUtilisateurs.getScene().getWindow(),
+                utilisateurConnecte // Transmet l'utilisateur connecté à la nouvelle fenêtre
+        );
     }
 
     @FXML
-    private void handleCreerCours(ActionEvent event) {
-        System.out.println("Bouton Créer un cours cliqué !");
-    }
-
-    @FXML
-    private void handleModifierEmploiDuTemps(ActionEvent event) {
-        System.out.println("Bouton Modifier l'emploi du temps cliqué !");
-    }
-
-    @FXML
-    private void handleGererCreneaux(ActionEvent event) {
-        System.out.println("Bouton Gérer les créneaux cliqué !");
-    }
-
-    @FXML
-    private void handleAffecterEnseignants(ActionEvent event) {
-        System.out.println("Bouton Affecter des enseignants cliqué !");
+    private void handleGererCours(ActionEvent event) {
+        System.out.println("Bouton 'Gérer les Cours' cliqué !");
+        NavigationUtil.ouvrirNouvelleFenetre(
+                "/projet/fxml/admin/accueil-admin-gerer-cours.fxml", // Le chemin vers ta nouvelle page de gestion des cours
+                "Gérer les Cours",
+                (Stage) btnGererCours.getScene().getWindow(),
+                utilisateurConnecte
+        );
     }
 
     @FXML
     private void handleGererSalles(ActionEvent event) {
-        System.out.println("Bouton Gérer les salles cliqué !");
+        System.out.println("Bouton 'Gérer les Salles' cliqué !");
+        NavigationUtil.ouvrirNouvelleFenetre(
+                "/projet/fxml/admin/accueil-admin-gerer-salles.fxml", // Le chemin vers ta nouvelle page de gestion des salles
+                "Gérer les Salles",
+                (Stage) btnGererSalles.getScene().getWindow(),
+                utilisateurConnecte
+        );
     }
 
     @FXML
-    private void handleControlerConflits(ActionEvent event) {
-        System.out.println("Bouton Contrôler les conflits cliqué !");
+    private void handleGererEmploiDuTemps(ActionEvent event) {
+        System.out.println("Bouton 'Gérer Emploi du Temps' cliqué !");
+        NavigationUtil.ouvrirNouvelleFenetre(
+                "/projet/fxml/admin/accueil-admin-gerer-emploi-du-temps.fxml", // Le chemin vers ta nouvelle page de gestion de l'emploi du temps
+                "Gérer Emploi du Temps",
+                (Stage) btnGererEmploiDuTemps.getScene().getWindow(),
+                utilisateurConnecte
+        );
     }
 
     @FXML
-    private void handleStatistiquesSalles(ActionEvent event) {
-        System.out.println("Bouton Statistiques des salles cliqué !");
-    }
-
-    @FXML
-    private void handleStatistiquesEnseignants(ActionEvent event) {
-        System.out.println("Bouton Statistiques enseignants cliqué !");
-    }
-
-    @FXML
-    private void handleGererUtilisateurs(ActionEvent event) {
-        System.out.println("Bouton Créer Utilisateur cliqué !");
+    private void handleCreerUtilisateur(ActionEvent event) {
+        System.out.println("Bouton 'Créer un nouvel utilisateur' cliqué !");
         NavigationUtil.ouvrirNouvelleFenetre(
                 "/projet/fxml/creer-utilisateur.fxml",
                 "Créer un utilisateur",
-                (Stage) gererUtilisateursButton.getScene().getWindow(),
+                (Stage) creerUtilisateurButton.getScene().getWindow(),
                 Utilisateur.getUtilisateurConnecte()
         );
+    }
+
+    @FXML
+    private void handleDeconnexion(ActionEvent event) {
+        System.out.println("Déconnexion de l'administrateur.");
+        Utilisateur.deconnecter();
+        try {
+            NavigationUtil.ouvrirNouvelleFenetre(
+                    "/projet/fxml/login.fxml",
+                    "Connexion",
+                    (Stage) nomUtilisateurLabel.getScene().getWindow(),
+                    null
+            );
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la déconnexion : " + e.getMessage());
+            NavigationUtil.afficherErreur("Problème lors de la déconnexion.");
+        }
     }
 }

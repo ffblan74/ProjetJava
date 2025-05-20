@@ -15,7 +15,7 @@ public class Main extends Application {
         Parent root = loader.load();
 
         // Créer la scène avec la racine chargée
-        Scene scene = new Scene(root, 400, 350);
+        Scene scene = new Scene(root, 300, 350);
 
         // Configurer la fenêtre principale
         primaryStage.setTitle("Connexion");

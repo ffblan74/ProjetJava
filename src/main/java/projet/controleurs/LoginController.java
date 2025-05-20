@@ -75,7 +75,7 @@ public class LoginController {
                             break;
                         case ADMINISTRATEUR:
                             NavigationUtil.ouvrirNouvelleFenetre(
-                                    "/projet/fxml/accueil-admin.fxml",
+                                    "/projet/fxml/accueil-admin-gerer-utilisateur.fxml",
                                     "Accueil Administrateur",
                                     currentStage,
                                     utilisateur // Passe l'utilisateur ici
