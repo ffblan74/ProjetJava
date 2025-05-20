@@ -63,13 +63,8 @@ public class CreerUtilisateurController implements Transmissible {
      */
     private void initialiserPage() {
         if (utilisateurConnecte != null) {
-            System.out.println("Utilisateur connecté : " + utilisateurConnecte.getNom() + " " + utilisateurConnecte.getPrenom());
-
-            // Si l'utilisateur connecté n'est pas ADMINISTRATEUR, interdire l'accès
-            if (!"ADMINISTRATEUR".equals(utilisateurConnecte.getRole())) {
-                NavigationUtil.afficherErreur("Vous n'avez pas les droits pour accéder à cette page.");
-                retournerAccueilAdmin();
-            }
+            System.out.println("Utilisateur connecté : " + utilisateurConnecte.getNom() + " " + utilisateurConnecte.getPrenom() + "role utilisateur : " + utilisateurConnecte.getRole() + " .");
+            System.out.println("Valeur brute du rôle : '" + utilisateurConnecte.getRole() + "'");
         } else {
             // Si aucun utilisateur connecté, rediriger par défaut
             System.out.println("Aucun utilisateur connecté. Redirection.");
@@ -134,15 +129,20 @@ public class CreerUtilisateurController implements Transmissible {
         return true;
     }
 
+    @FXML
     private void retournerAccueilAdmin() {
         // Logique ici pour naviguer vers AccueilAdmin
         System.out.println("Bouton Annuler cliqué : retour à l'accueil admin");
-        NavigationUtil.ouvrirNouvelleFenetre(
-                "/projet/fxml/accueil-admin.fxml",
-                "Accueil Admin",
-                (Stage) creerUtilisateurButton.getScene().getWindow(),
-                utilisateurConnecte
-        );
+        try {
+            NavigationUtil.ouvrirNouvelleFenetre(
+                    "/projet/fxml/accueil-admin.fxml",
+                    "Accueil Admin",
+                    (Stage) creerUtilisateurButton.getScene().getWindow(),
+                    utilisateurConnecte
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private int calculerProchainId(List<String[]> utilisateurs) {
@@ -155,7 +155,7 @@ public class CreerUtilisateurController implements Transmissible {
     }
 
     private String[] genererNouvelleLigneUtilisateur(int id, String nom, String prenom, String email, String password, String role) {
-        return new String[]{String.valueOf(id), nom, prenom, email, password, role, "", "", "", ""};
+        return new String[]{String.valueOf(id), nom, prenom, email, password, role, "", "", ""};
     }
 
 }

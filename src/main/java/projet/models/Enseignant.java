@@ -6,12 +6,10 @@ import java.util.List;
 
 public class Enseignant extends Utilisateur {
     private List<String> matiereEnseignee;
-    private int idEnseignant;
 
-    public Enseignant(int idUtilisateur, String nom, String prenom, String email, String motDePasse, List<String> matiereEnseignee, int idEnseignant) {
+    public Enseignant(int idUtilisateur, String nom, String prenom, String email, String motDePasse, List<String> matiereEnseignee) {
         super(idUtilisateur, nom, prenom, email, motDePasse, Role.ENSEIGNANT);
         this.matiereEnseignee = matiereEnseignee;
-        this.idEnseignant = idEnseignant;
     }
 
     public List<String> getMatiereEnseignee() {
@@ -22,11 +20,4 @@ public class Enseignant extends Utilisateur {
         this.matiereEnseignee = matiereEnseignee;
     }
 
-    public int getIdEnseignant() {
-        return idEnseignant;
-    }
-
-    public void setIdEnseignant(int idEnseignant) {
-        this.idEnseignant = idEnseignant;
-    }
 }
