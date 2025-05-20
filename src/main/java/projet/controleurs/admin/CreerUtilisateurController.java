@@ -135,6 +135,8 @@ public class CreerUtilisateurController implements Transmissible {
     }
 
     private void retournerAccueilAdmin() {
+        // Logique ici pour naviguer vers AccueilAdmin
+        System.out.println("Bouton Annuler cliqué : retour à l'accueil admin");
         NavigationUtil.ouvrirNouvelleFenetre(
                 "/projet/fxml/accueil-admin.fxml",
                 "Accueil Admin",

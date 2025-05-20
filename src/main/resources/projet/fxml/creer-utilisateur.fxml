@@ -26,5 +26,5 @@
         <ComboBox fx:id="roleComboBox" promptText="Sélectionner un rôle" GridPane.columnIndex="1" GridPane.rowIndex="4" />
     </GridPane>
     <Button fx:id="creerUtilisateurButton" onAction="#handleCreerUtilisateur" text="Créer l'utilisateur" />
-    <Button fx:id="annulerCreationButton" text="Annuler" onAction="#handleAnnulerCreation"/>
+    <Button fx:id="annulerCreationButton" text="Annuler" onAction="#retournerAccueilAdmin"/>
 </VBox>
