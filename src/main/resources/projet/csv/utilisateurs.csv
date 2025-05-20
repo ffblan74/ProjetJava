@@ -3,3 +3,4 @@ idUtilisateur;nom;prenom;email;motDePasse;role;idAdministrateur;idEnseignant;gro
 2;Morel;Pauline;pauline.morel@email.com;password456;ENSEIGNANT;None;1;None;None;[\"Mathématiques\",\"Physique\"]
 3;Martin;Alice;alice.martin@email.com;password789;ADMINISTRATEUR;1;None;None;None;None
 4;admin;admin;admin@;admin;ADMINISTRATEUR;2;None;None;None;None
+5;prof;prof;prof@;prof;ENSEIGNANT;None;2;None;None;[\"Mathématiques\",\"Physique\"]
