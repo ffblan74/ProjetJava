@@ -3,57 +3,37 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #E8F5E9; -fx-padding: 20;"
-      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="projet.controleurs.professeur.AccueilProfController">
-    <Label text="Emploi du Temps du Professeur" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;">
-        <VBox.margin>
-            <Insets bottom="10.0" />
-        </VBox.margin>
-    </Label>
+<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #F3E5F5; -fx-padding: 20;"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="projet.controleurs.eleve.AccueilEleveController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <Label fx:id="welcomeLabel" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #6A1B9A;"
+           text="Bienvenue, [Nom de l'élève]" />
+
+    <HBox alignment="TOP_LEFT" spacing="10.0">
+        <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Mon Emploi du Temps" />
+    </HBox>
 
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
         <content>
-            <GridPane fx:id="calendarGrid" style="-fx-border-color: #4CAF50; -fx-border-width: 1px;">
-                <columnConstraints>
-                    <ColumnConstraints prefWidth="50" /> <ColumnConstraints prefWidth="100" />
-                    <ColumnConstraints prefWidth="100" />
-                    <ColumnConstraints prefWidth="100" />
-                    <ColumnConstraints prefWidth="100" />
-                    <ColumnConstraints prefWidth="100" />
-                    <ColumnConstraints prefWidth="100" />
-                    <ColumnConstraints prefWidth="100" /> </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints prefHeight="30" /> <RowConstraints prefHeight="60" />
-                    <RowConstraints prefHeight="60" />
-                    <RowConstraints prefHeight="60" />
-                    <RowConstraints prefHeight="60" />
-                    <RowConstraints prefHeight="60" />
-                    <RowConstraints prefHeight="60" />
-                    <RowConstraints prefHeight="60" />
-                    <RowConstraints prefHeight="60" />
-                    <RowConstraints prefHeight="60" />
-                    <RowConstraints prefHeight="60" />
-                    <RowConstraints prefHeight="60" />
-                </rowConstraints>
+            <GridPane fx:id="emploiDuTempsGrid" style="-fx-border-color: #BA68C8; -fx-border-width: 1px;">
+                <!-- Column constraints will be added programmatically -->
             </GridPane>
         </content>
     </ScrollPane>
 
-    <HBox spacing="10.0" alignment="CENTER">
-        <Button text="Ajouter un Cours" onAction="#handleAddCours" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-        <Button text="Modifier un Cours" onAction="#handleModifyCours" style="-fx-background-color: #8BC34A; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-        <Button text="Supprimer un Cours" onAction="#handleDeleteCours" style="-fx-background-color: #B2DFDB; -fx-text-fill: #3E2723; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+    <HBox alignment="CENTER_RIGHT" spacing="10.0">
+        <Button text="Se Déconnecter" onAction="#handleLogout"
+                style="-fx-background-color: #EF5350; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
     </HBox>
-
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
 </VBox>
