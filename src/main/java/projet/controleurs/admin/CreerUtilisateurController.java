@@ -15,7 +15,6 @@ import projet.utils.Transmissible;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional; // Pour le bouton de confirmation
 
 public class CreerUtilisateurController implements Transmissible {
 
@@ -210,7 +209,7 @@ public class CreerUtilisateurController implements Transmissible {
 
             // Solution robuste : rouvrir et transmettre l'utilisateur ADMIN connecté (via la classe statique)
             NavigationUtil.ouvrirNouvelleFenetre(
-                    "/projet/fxml/accueil-admin.fxml",
+                    "/projet/fxml/accueil-admin-gerer-utilisateur.fxml",
                     "Accueil Admin",
                     null, // Il n'y a plus de stage à fermer depuis cette méthode
                     Utilisateur.getUtilisateurConnecte() // IMPORTANT: Transmet l'admin connecté

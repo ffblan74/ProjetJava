@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="650.0" prefWidth="900.0" styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projet.controleurs.admin.AccueilSallesController">
+    <children>
+        <VBox alignment="TOP_CENTER" prefHeight="650.0" prefWidth="900.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
+            <children>
+                <fx:include source="admin-header.fxml" />
+
+                <Label text="Gestion des Salles" textFill="Black">
+                    <font>
+                        <Font name="System Bold" size="22.0" />
+                    </font>
+                </Label>
+                <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="820.0" spacing="10.0">
+                    <children>
+                        <Button fx:id="creerSalleButton" onAction="#handleCreerSalle" text="Créer une nouvelle salle" styleClass="action-button" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="champRecherche" promptText="Rechercher par numéro ou localisation" prefWidth="250.0" />
+                        <Button onAction="#handleRechercherSalle" text="Rechercher" styleClass="action-button" />
+                        <Button onAction="#handleActualiserTableau" text="Actualiser" styleClass="action-button" />
+                    </children>
+                </HBox>
+                <TableView fx:id="tableViewSalles" prefHeight="400.0" prefWidth="820.0" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colIdSalle" prefWidth="60.0" text="ID" />
+                        <TableColumn fx:id="colNumeroSalle" prefWidth="120.0" text="Numéro" />
+                        <TableColumn fx:id="colCapacite" prefWidth="80.0" text="Capacité" />
+                        <TableColumn fx:id="colLocalisation" prefWidth="150.0" text="Localisation" />
+                        <TableColumn fx:id="colMateriel" prefWidth="200.0" text="Matériel" />
+                        <TableColumn fx:id="colActions" prefWidth="150.0" text="Actions" />
+                    </columns>
+                </TableView>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

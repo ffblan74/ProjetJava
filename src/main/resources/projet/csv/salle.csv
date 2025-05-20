@@ -1,3 +1,4 @@
-idSalle;numeroSalle;capacite;localisation;materielIds
-1;A101;50;Bâtiment A;1,2
-2;B202;30;Bâtiment B;3,4,5
+idSalle;numeroSalle;capacite;localisation;materielnom;materieldescription
+1;A101;50;Bâtiment A;Projecteur;Epson HD
+2;121;123;Batiment C;stylo;rien d'autre
+3;32432;324;batiment c;fdsq;fds
