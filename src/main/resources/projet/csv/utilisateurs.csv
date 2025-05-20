@@ -4,7 +4,8 @@ idUtilisateur;nom;prenom;email;motDePasse;role;groupe;emploiDuTempsId;matiereEns
 4;admin;admin;admin@;admin;ADMINISTRATEUR;None;None;None
 5;test;test;test@test.com;fjlkqsmfjqsdlkf345;ENSEIGNANT
 6;fdsq;fdqsfdsq;fdsq@fd.com;JOKLJHEKFkjldsf;ETUDIANT
-7;testjklj;pamf;fel@fd.com;fjklsdqjfiopeaz;ETUDIANT
+7;aaaaaaaaaaaa;pamf;fel@fd.com;fjklsdqjfiopeaz;ETUDIANT;;;
 9;test;test;tes@d.com;stekljfoemzkl;ETUDIANT
-10;fdsqjklm;fdsqjklm;fdsqlm@fjkdsqlm.com;fjdskqlmqmslkdfj;ADMINISTRATEUR;;;
-11;utilisateur;utilisateur;fdqmljfdklsmq@fds.com;fdsqfdsq;ENSEIGNANT;;;
+10;fdsqjklm;fdsqjklm;fdsqlm@fjkdsqlm.com;fjdskqlmqmslkdfj;ADMINISTRATEUR
+11;utilisateur;utilisateur;fdqmljfdklsmq@fds.com;fdsqfdsq;ENSEIGNANT
+12;fdsq;fdsq;fdsq@f.com;ffdsqfdsfdsqfdsq;ENSEIGNANT;;;

@@ -9,7 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.util.Callback; // Important pour CellFactory
+import javafx.util.Callback;
 import projet.controleurs.CRUDcsvController;
 import projet.models.Role;
 import projet.models.Utilisateur;
@@ -17,145 +17,173 @@ import projet.utils.NavigationUtil;
 import projet.utils.Transmissible;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional; // Pour les boîtes de dialogue
+import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AccueilAdminController implements Transmissible {
 
-    @FXML private Button creerCoursButton;
-    @FXML private Button modifierEmploiDuTempsButton;
-    @FXML private Button gererCreneauxButton;
-    @FXML private Button affecterEnseignantsButton;
-    @FXML private Button gererSallesButton;
-    @FXML private Button controlerConflitsButton;
-    @FXML private Button statistiquesSallesButton;
-    @FXML private Button statistiquesEnseignantsButton;
-    @FXML private Button gererUtilisateursButton;
-    @FXML private TableView<Utilisateur> tableViewUtilisateurs;
+    @FXML
+    private Button creerCoursButton;
+    @FXML
+    private Button modifierEmploiDuTempsButton;
+    @FXML
+    private Button gererCreneauxButton;
+    @FXML
+    private Button affecterEnseignantsButton;
+    @FXML
+    private Button gererSallesButton;
+    @FXML
+    private Button controlerConflitsButton;
+    @FXML
+    private Button statistiquesSallesButton;
+    @FXML
+    private Button statistiquesEnseignantsButton;
+    @FXML
+    private Button gererUtilisateursButton;
+    @FXML
+    private TableView<Utilisateur> tableViewUtilisateurs;
 
-    // Déclaration des nouvelles colonnes
-    @FXML private TableColumn<Utilisateur, Integer> colIdUtilisateur; // ID
-    @FXML private TableColumn<Utilisateur, String> colNom;
-    @FXML private TableColumn<Utilisateur, String> colPrenom;
-    @FXML private TableColumn<Utilisateur, String> colEmail; // Ajout de la colonne email
-    @FXML private TableColumn<Utilisateur, String> colRole;
-    @FXML private TableColumn<Utilisateur, Void> colActions; // Colonne pour les boutons d'action
+    @FXML
+    private TableColumn<Utilisateur, Integer> colIdUtilisateur;
+    @FXML
+    private TableColumn<Utilisateur, String> colNom;
+    @FXML
+    private TableColumn<Utilisateur, String> colPrenom;
+    @FXML
+    private TableColumn<Utilisateur, String> colEmail;
+    @FXML
+    private TableColumn<Utilisateur, String> colRole;
+    @FXML
+    private TableColumn<Utilisateur, Void> colActions;
 
-    @FXML private Label nomUtilisateurLabel;
+    @FXML
+    private Label nomUtilisateurLabel;
     private Utilisateur utilisateurConnecte;
 
-    // Constante pour le chemin du fichier CSV
     private static final String CHEMIN_FICHIER_UTILISATEURS = "src/main/resources/projet/csv/utilisateurs.csv";
+    private static final String CSV_EN_TETE = "idUtilisateur;nom;prenom;email;motDePasse;role;groupe;emploiDuTempsId;matiereEnseignee";
+
+    // Map pour stocker les données CSV complètes (y compris les champs non représentés dans l'objet Utilisateur)
+    private Map<Integer, String[]> donneesCSVCompletes = new HashMap<>();
 
     @FXML
     public void initialize() {
-        // Configuration des colonnes
-        colIdUtilisateur.setCellValueFactory(new PropertyValueFactory<>("idUtilisateur")); // Pour l'ID
+        colIdUtilisateur.setCellValueFactory(new PropertyValueFactory<>("idUtilisateur"));
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
-        colEmail.setCellValueFactory(new PropertyValueFactory<>("email")); // Pour l'Email
+        colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colRole.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRole().name()));
 
-        // Configuration de la colonne d'actions (boutons Modifier/Supprimer)
         ajouterBoutonsActions();
-
-        // Charger les utilisateurs au démarrage
         chargerUtilisateurs();
+
+        if (Utilisateur.getUtilisateurConnecte() != null) {
+            this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
+            afficherNomUtilisateur();
+        }
     }
 
-    // Méthode pour charger les utilisateurs depuis le CSV et remplir la TableView
     private void chargerUtilisateurs() {
+        donneesCSVCompletes.clear();
         try {
-            // Récupérer toutes les lignes du fichier CSV
             List<String[]> lignesUtilisateurs = CRUDcsvController.lire(CHEMIN_FICHIER_UTILISATEURS);
-
-            // Liste observable pour le TableView
             ObservableList<Utilisateur> utilisateurs = FXCollections.observableArrayList();
 
-            // Sauter l'en-tête (première ligne)
+            if (lignesUtilisateurs.isEmpty()) {
+                tableViewUtilisateurs.setItems(FXCollections.emptyObservableList());
+                return;
+            }
+
+            // Vérifier et ajouter l'en-tête si manquant
+            if (lignesUtilisateurs.size() > 0 && !lignesUtilisateurs.get(0)[0].equals("idUtilisateur")) {
+                System.err.println("En-tête CSV manquante ou incorrecte dans utilisateurs.csv.");
+            }
+
             for (int i = 1; i < lignesUtilisateurs.size(); i++) {
                 String[] ligne = lignesUtilisateurs.get(i);
 
-                // Vérifier que la ligne a au moins 6 colonnes (ID, Nom, Prénom, Email, MDP, Rôle)
                 if (ligne.length >= 6) {
-                    // Création d'un nouvel utilisateur à partir des données CSV
-                    int id = Integer.parseInt(ligne[0].trim());
-                    String nom = ligne[1].trim();
-                    String prenom = ligne[2].trim();
-                    String email = ligne[3].trim();
-                    String motDePasse = ligne[4].trim();
-                    Role role = Role.valueOf(ligne[5].trim()); // Convertir String en Enum Role
+                    try {
+                        int id = Integer.parseInt(ligne[0].trim());
+                        String nom = ligne[1].trim();
+                        String prenom = ligne[2].trim();
+                        String email = ligne[3].trim();
+                        String motDePasse = ligne[4].trim();
+                        Role role = Role.valueOf(ligne[5].trim().toUpperCase());
 
-                    utilisateurs.add(new Utilisateur(id, nom, prenom, email, motDePasse, role));
+                        Utilisateur utilisateur = new Utilisateur(id, nom, prenom, email, motDePasse, role);
+                        utilisateurs.add(utilisateur);
+                        donneesCSVCompletes.put(id, ligne);
+
+                    } catch (NumberFormatException e) {
+                        System.err.println("Ligne CSV ignorée (ID non numérique) : " + String.join(";", ligne) + " - " + e.getMessage());
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Ligne CSV ignorée (Rôle invalide) : " + String.join(";", ligne) + " - " + e.getMessage());
+                    }
+                } else {
+                    System.err.println("Ligne CSV ignorée (pas assez de colonnes) : " + String.join(";", ligne));
                 }
             }
-
-            // Définir les éléments dans le TableView
             tableViewUtilisateurs.setItems(utilisateurs);
 
         } catch (IOException e) {
             System.err.println("Erreur lors du chargement des utilisateurs depuis le CSV : " + e.getMessage());
             NavigationUtil.afficherErreur("Impossible de charger la liste des utilisateurs. Vérifiez le fichier CSV.");
-        } catch (NumberFormatException e) {
-            System.err.println("Erreur de format de nombre (ID) dans le CSV : " + e.getMessage());
-            NavigationUtil.afficherErreur("Erreur de formatage d'ID dans le fichier utilisateurs.csv.");
-        } catch (IllegalArgumentException e) {
-            System.err.println("Erreur de conversion de rôle dans le CSV : " + e.getMessage());
-            NavigationUtil.afficherErreur("Erreur dans la définition des rôles utilisateurs dans le fichier CSV.");
         }
     }
 
-    // Méthode pour ajouter les boutons Modifier et Supprimer à la colonne "Actions"
     private void ajouterBoutonsActions() {
-        colActions.setCellFactory(new Callback<TableColumn<Utilisateur, Void>, TableCell<Utilisateur, Void>>() {
+        colActions.setCellFactory(tc -> new TableCell<Utilisateur, Void>() {
+            private final Button btnModifier = new Button("Modifier");
+            private final Button btnSupprimer = new Button("Supprimer");
+            private final HBox pane = new HBox(5, btnModifier, btnSupprimer);
+
+            {
+                btnModifier.setOnAction(event -> {
+                    Utilisateur utilisateur = getTableView().getItems().get(getIndex());
+                    handleModifierUtilisateur(utilisateur);
+                });
+
+                btnSupprimer.setOnAction(event -> {
+                    Utilisateur utilisateur = getTableView().getItems().get(getIndex());
+                    handleSupprimerUtilisateur(utilisateur);
+                });
+            }
+
             @Override
-            public TableCell<Utilisateur, Void> call(final TableColumn<Utilisateur, Void> param) {
-                final TableCell<Utilisateur, Void> cell = new TableCell<Utilisateur, Void>() {
-
-                    private final Button btnModifier = new Button("Modifier");
-                    private final Button btnSupprimer = new Button("Supprimer");
-
-                    {
-                        btnModifier.setOnAction((ActionEvent event) -> {
-                            Utilisateur utilisateur = getTableView().getItems().get(getIndex());
-                            handleModifierUtilisateur(utilisateur);
-                        });
-
-                        btnSupprimer.setOnAction((ActionEvent event) -> {
-                            Utilisateur utilisateur = getTableView().getItems().get(getIndex());
-                            handleSupprimerUtilisateur(utilisateur);
-                        });
-                    }
-
-                    @Override
-                    public void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            HBox pane = new HBox(5, btnModifier, btnSupprimer); // Espacement de 5px
-                            setGraphic(pane);
-                        }
-                    }
-                };
-                return cell;
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(pane);
+                }
             }
         });
     }
 
-    // --- Gestionnaires d'événements pour les boutons d'action ---
-
-    // Gère la modification d'un utilisateur
     private void handleModifierUtilisateur(Utilisateur utilisateur) {
         System.out.println("Modifier utilisateur : " + utilisateur.getNom() + " (ID: " + utilisateur.getIdUtilisateur() + ")");
-        // Implémente la logique de modification ici.
-        // Cela pourrait impliquer d'ouvrir une nouvelle fenêtre avec un formulaire pré-rempli.
+
+        String[] ligneCSVComplete = donneesCSVCompletes.get(utilisateur.getIdUtilisateur());
+
+        if (ligneCSVComplete == null) {
+            System.err.println("Erreur: Données CSV complètes introuvables pour l'utilisateur ID: " + utilisateur.getIdUtilisateur());
+            NavigationUtil.afficherErreur("Impossible de récupérer les informations complètes de l'utilisateur pour la modification.");
+            return;
+        }
+
+        Object[] dataToTransmit = {utilisateur, ligneCSVComplete};
+
         try {
             NavigationUtil.ouvrirNouvelleFenetre(
-                    "/projet/fxml/creer-utilisateur.fxml", // Tu peux réutiliser ce FXML pour la modification
+                    "/projet/fxml/creer-utilisateur.fxml",
                     "Modifier utilisateur",
                     (Stage) tableViewUtilisateurs.getScene().getWindow(),
-                    utilisateur // Transmet l'utilisateur à modifier
+                    dataToTransmit
             );
         } catch (Exception e) {
             System.err.println("Erreur lors de l'ouverture de la fenêtre de modification : " + e.getMessage());
@@ -163,22 +191,14 @@ public class AccueilAdminController implements Transmissible {
         }
     }
 
-    // Gère la suppression d'un utilisateur
     private void handleSupprimerUtilisateur(Utilisateur utilisateur) {
         System.out.println("Supprimer utilisateur : " + utilisateur.getNom() + " (ID: " + utilisateur.getIdUtilisateur() + ")");
 
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirmation de suppression");
-        confirmation.setHeaderText("Supprimer l'utilisateur " + utilisateur.getNom() + " " + utilisateur.getPrenom() + " ?");
-        confirmation.setContentText("Cette action est irréversible.");
-
-        Optional<ButtonType> result = confirmation.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (NavigationUtil.afficherConfirmation("Confirmation de suppression", "Supprimer l'utilisateur " + utilisateur.getNom() + " " + utilisateur.getPrenom() + " ?\nCette action est irréversible.")) {
             try {
-                // Utilise l'ID comme valeur unique pour la suppression
                 CRUDcsvController.supprimerLigne(CHEMIN_FICHIER_UTILISATEURS, 0, String.valueOf(utilisateur.getIdUtilisateur()));
                 System.out.println("Utilisateur supprimé : " + utilisateur.getIdUtilisateur());
-                chargerUtilisateurs(); // Recharge le tableau pour mettre à jour l'affichage
+                chargerUtilisateurs();
                 NavigationUtil.afficherInformation("Succès", "L'utilisateur a été supprimé.");
             } catch (IOException e) {
                 System.err.println("Erreur lors de la suppression de l'utilisateur : " + e.getMessage());
@@ -187,19 +207,26 @@ public class AccueilAdminController implements Transmissible {
         }
     }
 
-    // Méthode de transmission de données pour l'utilisateur connecté
     @Override
     public void transmettreDonnees(Object data) {
         if (data instanceof Utilisateur) {
-
-            if (Utilisateur.getUtilisateurConnecte() == null) {
+            if (Utilisateur.getUtilisateurConnecte() == null || !Utilisateur.getUtilisateurConnecte().equals(data)) {
                 Utilisateur.connecter((Utilisateur) data);
             }
             this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
             afficherNomUtilisateur();
+            chargerUtilisateurs();
         } else if (data instanceof String && ((String) data).equals("refresh")) {
             chargerUtilisateurs();
-            afficherNomUtilisateur(); // Assure la mise à jour du label
+            afficherNomUtilisateur();
+        } else {
+            if (Utilisateur.getUtilisateurConnecte() != null) {
+                this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
+                afficherNomUtilisateur();
+                chargerUtilisateurs();
+            } else {
+                System.err.println("Aucun utilisateur connecté transmis à AccueilAdminController, ou données inattendues.");
+            }
         }
     }
 
@@ -211,13 +238,9 @@ public class AccueilAdminController implements Transmissible {
         }
     }
 
-    // --- Gestionnaires d'événements pour les autres boutons de l'interface (restent les mêmes) ---
-
     @FXML
     private void handleCreerCours(ActionEvent event) {
         System.out.println("Bouton Créer un cours cliqué !");
-        // Exemple d'ouverture d'une nouvelle fenêtre pour créer un cours :
-        // NavigationUtil.ouvrirNouvelleFenetre("/projet/fxml/creer-cours.fxml", "Créer un cours", (Stage) creerCoursButton.getScene().getWindow(), utilisateurConnecte);
     }
 
     @FXML
@@ -240,6 +263,10 @@ public class AccueilAdminController implements Transmissible {
         System.out.println("Bouton Gérer les salles cliqué !");
     }
 
+    @FXML
+    private void handleControlerConflits(ActionEvent event) {
+        System.out.println("Bouton Contrôler les conflits cliqué !");
+    }
 
     @FXML
     private void handleStatistiquesSalles(ActionEvent event) {
@@ -258,7 +285,7 @@ public class AccueilAdminController implements Transmissible {
                 "/projet/fxml/creer-utilisateur.fxml",
                 "Créer un utilisateur",
                 (Stage) gererUtilisateursButton.getScene().getWindow(),
-                utilisateurConnecte
+                Utilisateur.getUtilisateurConnecte()
         );
     }
 }
