@@ -45,4 +45,12 @@ public class NavigationUtil {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    public static void afficherInformation(String titre, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titre);
+        alert.setHeaderText(null); // Pas d'en-tête pour un simple message d'information
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

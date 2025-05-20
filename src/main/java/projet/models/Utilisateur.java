@@ -2,7 +2,7 @@ package projet.models;
 
 import projet.models.Role;
 
-public abstract class Utilisateur {
+public class Utilisateur {
     protected int idUtilisateur;
     protected String nom;
     protected String prenom;

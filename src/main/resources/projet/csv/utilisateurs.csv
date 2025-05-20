@@ -1,8 +1,10 @@
 idUtilisateur;nom;prenom;email;motDePasse;role;groupe;emploiDuTempsId;matiereEnseignee
-1;Dupont;Jean;jean.dupont@email.com;password123;ETUDIANT;Groupe A;1;None
 2;Morel;Pauline;pauline.morel@email.com;password456;ENSEIGNANT;None;None;[\"Mathématiques\",\"Physique\"]
 3;Martin;Alice;alice.martin@email.com;password789;ADMINISTRATEUR;None;None;None
 4;admin;admin;admin@;admin;ADMINISTRATEUR;None;None;None
-5;test;test;test@test.com;fjlkqsmfjqsdlkf345;ENSEIGNANT;;;
-6;fdsq;fdqsfdsq;fdsq@fd.com;JOKLJHEKFkjldsf;ETUDIANT;;;
-7;testjklj;pamf;fel@fd.com;fjklsdqjfiopeaz;ETUDIANT;;;
+5;test;test;test@test.com;fjlkqsmfjqsdlkf345;ENSEIGNANT
+6;fdsq;fdqsfdsq;fdsq@fd.com;JOKLJHEKFkjldsf;ETUDIANT
+7;testjklj;pamf;fel@fd.com;fjklsdqjfiopeaz;ETUDIANT
+9;test;test;tes@d.com;stekljfoemzkl;ETUDIANT
+10;fdsqjklm;fdsqjklm;fdsqlm@fjkdsqlm.com;fjdskqlmqmslkdfj;ADMINISTRATEUR;;;
+11;utilisateur;utilisateur;fdqmljfdklsmq@fds.com;fdsqfdsq;ENSEIGNANT;;;

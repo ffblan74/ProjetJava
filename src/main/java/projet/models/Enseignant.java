@@ -20,6 +20,4 @@ public class Enseignant extends Utilisateur {
         this.matiereEnseignee = matiereEnseignee;
     }
 
-    public int getIdEnseignant() {
-    }
 }

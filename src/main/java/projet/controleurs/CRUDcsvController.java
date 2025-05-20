@@ -118,7 +118,6 @@ public class CRUDcsvController {
         for (String[] ligne : toutesLesLignes) {
             if (indexColonne < ligne.length && ligne[indexColonne].equals(valeur)) {
                 resultat.add(ligne);
-
             }
         }
         return resultat;
