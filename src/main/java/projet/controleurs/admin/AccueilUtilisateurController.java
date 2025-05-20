@@ -8,9 +8,6 @@ import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
-// import javafx.scene.layout.StackPane; // Plus besoin
-// import javafx.scene.Node;              // Plus besoin
-// import javafx.fxml.FXMLLoader;         // Plus besoin
 import javafx.stage.Stage;
 import projet.controleurs.CRUDcsvController;
 import projet.models.Role;
@@ -25,13 +22,7 @@ import java.util.Map;
 
 public class AccueilUtilisateurController implements Transmissible {
 
-    @FXML private Button btnGererUtilisateurs;
-    @FXML private Button btnGererCours;
-    @FXML private Button btnGererSalles;
-    @FXML private Button btnGererEmploiDuTemps;
-
-    // @FXML private StackPane contentPane; // Plus besoin
-
+    // Les champs spécifiques à la gestion des utilisateurs restent
     @FXML private TableView<Utilisateur> tableViewUtilisateurs;
     @FXML private TableColumn<Utilisateur, Integer> colIdUtilisateur;
     @FXML private TableColumn<Utilisateur, String> colNom;
@@ -41,17 +32,16 @@ public class AccueilUtilisateurController implements Transmissible {
     @FXML private TableColumn<Utilisateur, Void> colActions;
     @FXML private Button creerUtilisateurButton;
 
-    @FXML private Label nomUtilisateurLabel;
-    private Utilisateur utilisateurConnecte;
+    private Utilisateur utilisateurConnecte; // Reste ici car ce contrôleur en a besoin pour ses propres opérations
 
     private static final String CHEMIN_FICHIER_UTILISATEURS = "src/main/resources/projet/csv/utilisateurs.csv";
     private Map<Integer, String[]> donneesCSVCompletes = new HashMap<>();
 
     @FXML
     public void initialize() {
+        // Initialisation de l'utilisateur connecté
         if (Utilisateur.getUtilisateurConnecte() != null) {
             this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
-            afficherNomUtilisateur();
         }
 
         initialiserGestionUtilisateurs();
@@ -70,32 +60,26 @@ public class AccueilUtilisateurController implements Transmissible {
     @Override
     public void transmettreDonnees(Object data) {
         if (data instanceof Utilisateur) {
+            // Mettre à jour l'utilisateur connecté dans cette classe si nécessaire
             if (Utilisateur.getUtilisateurConnecte() == null || !Utilisateur.getUtilisateurConnecte().equals(data)) {
                 Utilisateur.connecter((Utilisateur) data);
             }
             this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
-            afficherNomUtilisateur();
-            chargerUtilisateurs();
+            chargerUtilisateurs(); // Rafraîchir les données de la table
         } else if (data instanceof String && ((String) data).equals("refresh")) {
+            // Si un signal "refresh" est transmis (par exemple, après une création/modification)
             chargerUtilisateurs();
-            afficherNomUtilisateur();
         } else {
+            // Si aucune donnée spécifique n'est transmise, vérifier l'utilisateur connecté globalement
             if (Utilisateur.getUtilisateurConnecte() != null) {
                 this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
-                afficherNomUtilisateur();
                 chargerUtilisateurs();
             } else {
-                System.err.println("Aucun utilisateur connecté transmis à AccueilAdminController, ou données inattendues.");
-                NavigationUtil.ouvrirNouvelleFenetre("/projet/fxml/login.fxml", "Connexion", (Stage) nomUtilisateurLabel.getScene().getWindow(), null);
+                System.err.println("Aucun utilisateur connecté transmis à AccueilUtilisateurController, ou données inattendues. Redirection.");
+                // Redirection vers la page de connexion si aucun utilisateur n'est connecté
+                Stage stageActuel = (Stage) tableViewUtilisateurs.getScene().getWindow(); // Obtient le stage de la vue actuelle
+                NavigationUtil.changerScene(stageActuel, "/projet/fxml/login.fxml", "Connexion", null); // Chemin FXML corrigé
             }
-        }
-    }
-
-    private void afficherNomUtilisateur() {
-        if (utilisateurConnecte != null) {
-            nomUtilisateurLabel.setText("Bonjour, " + utilisateurConnecte.getNom() + " " + utilisateurConnecte.getPrenom());
-        } else {
-            nomUtilisateurLabel.setText("Utilisateur inconnu");
         }
     }
 
@@ -190,7 +174,7 @@ public class AccueilUtilisateurController implements Transmissible {
 
         try {
             NavigationUtil.ouvrirNouvelleFenetre(
-                    "/projet/fxml/creer-utilisateur.fxml",
+                    "/projet/fxml/creer_utilisateur.fxml", // Chemin FXML corrigé
                     "Modifier utilisateur",
                     (Stage) tableViewUtilisateurs.getScene().getWindow(),
                     dataToTransmit
@@ -218,74 +202,13 @@ public class AccueilUtilisateurController implements Transmissible {
     }
 
     @FXML
-    private void handleGererUtilisateurs(ActionEvent event) {
-        System.out.println("Bouton 'Gérer les Utilisateurs' cliqué !");
-        NavigationUtil.ouvrirNouvelleFenetre(
-                "/projet/fxml/admin/accueil-admin-gerer-utilisateur.fxml", // Le chemin vers ta nouvelle page de gestion des utilisateurs
-                "Gérer les Utilisateurs",
-                (Stage) btnGererUtilisateurs.getScene().getWindow(),
-                utilisateurConnecte // Transmet l'utilisateur connecté à la nouvelle fenêtre
-        );
-    }
-
-    @FXML
-    private void handleGererCours(ActionEvent event) {
-        System.out.println("Bouton 'Gérer les Cours' cliqué !");
-        NavigationUtil.ouvrirNouvelleFenetre(
-                "/projet/fxml/admin/accueil-admin-gerer-cours.fxml", // Le chemin vers ta nouvelle page de gestion des cours
-                "Gérer les Cours",
-                (Stage) btnGererCours.getScene().getWindow(),
-                utilisateurConnecte
-        );
-    }
-
-    @FXML
-    private void handleGererSalles(ActionEvent event) {
-        System.out.println("Bouton 'Gérer les Salles' cliqué !");
-        NavigationUtil.ouvrirNouvelleFenetre(
-                "/projet/fxml/admin/accueil-admin-gerer-salles.fxml", // Le chemin vers ta nouvelle page de gestion des salles
-                "Gérer les Salles",
-                (Stage) btnGererSalles.getScene().getWindow(),
-                utilisateurConnecte
-        );
-    }
-
-    @FXML
-    private void handleGererEmploiDuTemps(ActionEvent event) {
-        System.out.println("Bouton 'Gérer Emploi du Temps' cliqué !");
-        NavigationUtil.ouvrirNouvelleFenetre(
-                "/projet/fxml/admin/accueil-admin-gerer-emploi-du-temps.fxml", // Le chemin vers ta nouvelle page de gestion de l'emploi du temps
-                "Gérer Emploi du Temps",
-                (Stage) btnGererEmploiDuTemps.getScene().getWindow(),
-                utilisateurConnecte
-        );
-    }
-
-    @FXML
     private void handleCreerUtilisateur(ActionEvent event) {
         System.out.println("Bouton 'Créer un nouvel utilisateur' cliqué !");
         NavigationUtil.ouvrirNouvelleFenetre(
-                "/projet/fxml/creer-utilisateur.fxml",
+                "/projet/fxml/creer-utilisateur.fxml", // Chemin FXML corrigé
                 "Créer un utilisateur",
                 (Stage) creerUtilisateurButton.getScene().getWindow(),
                 Utilisateur.getUtilisateurConnecte()
         );
-    }
-
-    @FXML
-    private void handleDeconnexion(ActionEvent event) {
-        System.out.println("Déconnexion de l'administrateur.");
-        Utilisateur.deconnecter();
-        try {
-            NavigationUtil.ouvrirNouvelleFenetre(
-                    "/projet/fxml/login.fxml",
-                    "Connexion",
-                    (Stage) nomUtilisateurLabel.getScene().getWindow(),
-                    null
-            );
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la déconnexion : " + e.getMessage());
-            NavigationUtil.afficherErreur("Problème lors de la déconnexion.");
-        }
     }
 }

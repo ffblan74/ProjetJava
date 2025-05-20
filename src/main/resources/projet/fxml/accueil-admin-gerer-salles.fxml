@@ -5,14 +5,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="550.0" prefWidth="850.0" styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projet.controleurs.admin.AcceuilSallesController">
+<AnchorPane prefHeight="650.0" prefWidth="900.0" styleClass="root" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projet.controleurs.admin.AccueilSallesController">
     <children>
-        <VBox alignment="TOP_CENTER" prefHeight="550.0" prefWidth="850.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox alignment="TOP_CENTER" prefHeight="650.0" prefWidth="900.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <padding>
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
             </padding>
             <children>
-                <Label text="Gestion des Salles" textFill="#e4b01e">
+                <fx:include source="admin-header.fxml" />
+
+                <Label text="Gestion des Salles" textFill="Black">
                     <font>
                         <Font name="System Bold" size="22.0" />
                     </font>

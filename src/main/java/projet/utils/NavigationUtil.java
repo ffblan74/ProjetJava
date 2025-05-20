@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import java.net.URL;
 
 import java.io.IOException;
 
@@ -13,29 +14,70 @@ public class NavigationUtil {
 
     public static void ouvrirNouvelleFenetre(String cheminFXML, String titre, Stage currentStage, Object data) {
         try {
-            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource(cheminFXML));
+            // Débogage : imprimer le chemin exact
+            System.out.println("Chemin FXML tenté : " + cheminFXML);
+
+            // Vérifier si la ressource existe réellement
+            URL resourceUrl = NavigationUtil.class.getResource(cheminFXML);
+            if (resourceUrl == null) {
+                System.err.println("ERREUR : Fichier FXML introuvable - " + cheminFXML);
+                afficherErreur("Impossible de charger la fenêtre. Fichier introuvable : " + cheminFXML);
+                return;
+            }
+
+            // Utiliser l'URL trouvée pour charger
+            FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent root = loader.load();
 
-            // Récupérer le contrôleur et lui transmettre les données
+            // Reste du code inchangé
             Object controller = loader.getController();
             if (controller instanceof Transmissible) {
                 ((Transmissible) controller).transmettreDonnees(data);
             }
 
-            // Configurer la scène et l'afficher
             Stage stage = new Stage();
             stage.setTitle(titre);
             stage.setScene(new Scene(root));
             stage.show();
 
-            // Fermer la fenêtre actuelle
             if (currentStage != null) {
                 currentStage.close();
             }
         } catch (IOException e) {
+            System.err.println("Erreur de chargement FXML : " + e.getMessage());
             e.printStackTrace();
+            afficherErreur("Impossible de charger la fenêtre : " + e.getMessage());
         }
     }
+
+    public static void changerScene(Stage stage, String cheminFXML, String titre, Object data) {
+        try {
+            System.out.println("Chemin FXML tenté (changer scène) : " + cheminFXML);
+            URL resourceUrl = NavigationUtil.class.getResource(cheminFXML);
+            if (resourceUrl == null) {
+                System.err.println("ERREUR : Fichier FXML introuvable - " + cheminFXML);
+                afficherErreur("Impossible de changer la scène. Fichier introuvable : " + cheminFXML);
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(resourceUrl);
+            Parent root = loader.load();
+
+            Object controller = loader.getController();
+            if (controller instanceof Transmissible) {
+                ((Transmissible) controller).transmettreDonnees(data);
+            }
+
+
+            stage.setTitle(titre);
+            stage.getScene().setRoot(root);
+        } catch (IOException e) {
+            System.err.println("Erreur de chargement FXML (changer scène) : " + e.getMessage());
+            e.printStackTrace();
+            afficherErreur("Impossible de changer la scène : " + e.getMessage());
+        }
+    }
+
 
 
     // Méthode pour afficher un message d'erreur à l'utilisateur
