@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import projet.controleurs.CRUDcsvController;
-import projet.models.Salle; // Assure-toi que cette classe existe et est à jour
+import projet.models.Salle;
 import projet.models.Utilisateur;
 import projet.utils.NavigationUtil;
 import projet.utils.Transmissible;
@@ -19,35 +19,44 @@ import java.util.stream.Collectors;
 public class CreerModifierSalleController implements Transmissible {
 
     @FXML private Label titrePage;
-    @FXML private TextField numeroSalleField; // Changé de nomSalleField à numeroSalleField
+    @FXML private TextField numeroSalleField;
     @FXML private TextField capaciteField;
-    @FXML private TextField localisationField; // Nouveau champ
-    @FXML private TextArea materielNomTextArea; // Nouveau champ (pour les noms de matériel)
-    @FXML private TextArea materielsDescriptionTextArea; // Nouveau champ (pour les descriptions de matériel)
+    @FXML private TextField localisationField;
+    @FXML private TextArea materielNomTextArea;
+    @FXML private TextArea materielsDescriptionTextArea;
     @FXML private Button creerModifierSalleButton;
     @FXML private Button annulerButton;
 
-    private Salle salleAModifier; // La salle que l'on est en train de modifier
-    private String[] ligneCSVOriginaleAModifier; // La ligne CSV complète de la salle à modifier
-    private Utilisateur utilisateurConnecte; // L'utilisateur admin connecté (pour revenir à l'accueil admin)
+    private Salle salleAModifier;
+    private String[] ligneCSVOriginaleAModifier;
+    private Utilisateur utilisateurConnecte;
 
     private static final String CHEMIN_FICHIER_SALLES = "src/main/resources/projet/csv/salle.csv";
-    // En-tête mis à jour pour correspondre à la classe Salle fournie
     private static final String CSV_EN_TETE = "idSalle;numeroSalle;capacite;localisation;materielNom;materielsDescription";
 
     @FXML
     public void initialize() {
-        // Initialisation si nécessaire
-        // S'assurer que les TextArea ont un retour chariot par défaut
         materielNomTextArea.setWrapText(true);
         materielsDescriptionTextArea.setWrapText(true);
     }
 
     @Override
     public void transmettreDonnees(Object data) {
-        if (data instanceof Utilisateur) {
-            // C'est l'utilisateur admin qui se connecte au début de la création
+        if (data == null) { // <-- NOUVEAU : Traite 'null' comme un signal pour la CRÉATION d'une salle
+            this.salleAModifier = null; // Assure que nous sommes en mode création
+            titrePage.setText("Créer une nouvelle salle");
+            creerModifierSalleButton.setText("Créer la salle");
+            // Optionnel : Récupère l'utilisateur connecté globalement si ses infos sont nécessaires pour la création
+            this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
+            if (this.utilisateurConnecte == null) {
+                System.err.println("Aucun utilisateur administrateur connecté pour la création de salle.");
+                // Décide si tu veux afficher une erreur ou rediriger ici si l'utilisateur est absolument requis
+            }
+        } else if (data instanceof Utilisateur) {
+            // Cette branche pourrait être utilisée si un objet Utilisateur est transmis
+            // explicitement pour donner le contexte de l'administrateur créateur, par exemple.
             this.utilisateurConnecte = (Utilisateur) data;
+            this.salleAModifier = null; // En mode création
             titrePage.setText("Créer une nouvelle salle");
             creerModifierSalleButton.setText("Créer la salle");
         } else if (data instanceof Object[] && ((Object[]) data).length == 2) {
@@ -57,13 +66,16 @@ public class CreerModifierSalleController implements Transmissible {
                 this.salleAModifier = (Salle) transmittedData[0];
                 this.ligneCSVOriginaleAModifier = (String[]) transmittedData[1];
                 preRemplirChampsPourModification();
+                // Récupère l'utilisateur connecté pour le contexte si besoin
+                this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
             } else {
                 System.err.println("Type de données incorrectes dans le tableau transmis pour modification de salle.");
                 NavigationUtil.afficherErreur("Données de modification de salle invalides.");
                 retournerAccueilAdmin();
             }
         } else {
-            System.err.println("Données inattendues transmises au contrôleur CreerModifierSalleController.");
+            // Cas de données vraiment inattendues (ni null, ni Utilisateur, ni Object[])
+            System.err.println("Type de données non géré transmis au contrôleur CreerModifierSalleController: " + data.getClass().getName());
             this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
             if (this.utilisateurConnecte == null) {
                 NavigationUtil.afficherErreur("Aucun utilisateur administrateur connecté. Redirection.");
@@ -99,7 +111,6 @@ public class CreerModifierSalleController implements Transmissible {
 
         int capacite = Integer.parseInt(capaciteStr);
 
-        // Convertir les chaînes séparées par des virgules en List<String>
         List<String> materielNom = materielNomCsv.isEmpty() ? new ArrayList<>() : Arrays.asList(materielNomCsv.split(",")).stream().map(String::trim).collect(Collectors.toList());
         List<String> materielsDescription = materielsDescriptionCsv.isEmpty() ? new ArrayList<>() : Arrays.asList(materielsDescriptionCsv.split(",")).stream().map(String::trim).collect(Collectors.toList());
 
@@ -188,7 +199,7 @@ public class CreerModifierSalleController implements Transmissible {
 
         // Retourne à la page de gestion des salles
         NavigationUtil.ouvrirNouvelleFenetre(
-                "/projet/fxml/accueil-admin-gerer-salles.fxml", // Chemin FXML correct
+                "/projet/fxml/accueil-admin-gerer-salles.fxml",
                 "Gestion des Salles",
                 null,
                 utilisateurConnecte // Transmet l'admin connecté pour rafraîchir la vue principale
