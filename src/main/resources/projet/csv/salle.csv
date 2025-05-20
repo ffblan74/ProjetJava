@@ -1,3 +1,11 @@
 idSalle;numeroSalle;capacite;localisation;materielIds
-1;A101;50;Bâtiment A;1,2
-2;B202;30;Bâtiment B;3,4,5
+1;001;30;Rez-de-chaussée;1,2
+2;002;25;Rez-de-chaussée;3
+3;003;20;Rez-de-chaussée;4,5
+4;101;40;Premier étage;6
+5;102;35;Premier étage;7,8
+6;103;30;Premier étage;9
+7;201;50;Deuxième étage;10,11
+8;202;45;Deuxième étage;12
+9;203;40;Deuxième étage;13,14
+10;301;60;Troisième étage;15,16,17

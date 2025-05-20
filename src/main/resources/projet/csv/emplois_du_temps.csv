@@ -1,3 +1,5 @@
 idEmploiDuTemps;etudiantId;coursIds
-1;1;1,2
-2;2;2
+1;1;1,2,3,10,11,12  ; Jean Dupont (ID 1) - Groupe A
+2;6;1,2,3,10,11,12  ; eleve (ID 6) - Groupe A
+3;7;4,5,13,14,15    ; Sophie Durand (ID 7) - Groupe B
+4;8;6,7,8,16,17,18  ; Marc Lefevre (ID 8) - Groupe C

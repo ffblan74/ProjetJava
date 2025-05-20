@@ -1,3 +1,8 @@
-idCours;nomMatiere;codeCours;description;duree;enseignantId;salleId;horaireId
-1;Mathématiques;MATH101;Introduction aux mathématiques;2h;2;1;1
-2;Informatique;INFO102;Algorithmique et programmation;3h;2;2;2
+idCours;nomMatiere;codeCours;description;duree;enseignantId;salleId;horaireId;jour;heureDebut;heureFin;classe
+1;Mathématiques;MATH101;Introduction aux mathématiques;2h;2;1;1;Lundi;08:00;10:00;L1 Maths
+10;Statistiques;STA101;Probabilités;2h;2;1;1;Lundi;08:00;10:00;Groupe A
+11;Anglais;ANG101;Expression Orale;0h;2;2;2;Mardi;09:00;10:30;Groupe A
+12;Économie;ECO101;Microéconomie;2h;2;3;3;Mercredi;10:00;12:00;Groupe A
+19;Math;CODE_AUTO_19;Cours de Math;2h;2;1;0;Lundi;08:00;10:00;Groupe A
+20;maths;CODE_AUTO_20;Cours de maths;2h;2;2;0;Lundi;08:00;10:00;Groupe A
+21;maths;MAT-ED98;;2h;2;5;57114;Mercredi;08:00;10:00;Groupe C

@@ -1,15 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #F3E5F5; -fx-padding: 20;"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="projet.controleurs.eleve.AccueilEleveController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
 
-            prefHeight="400.0" prefWidth="600.0">
+    <Label fx:id="welcomeLabel" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #6A1B9A;" text="Bienvenue, [Nom de l'élève]" />
 
-    <Label text="Bienvenue sur la page d'accueil Élève !"
-           layoutX="150" layoutY="180"
-           style="-fx-font-size: 24px; -fx-text-fill: #2a9df4;" />
+    <HBox alignment="TOP_LEFT" spacing="10.0">
+        <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Mon Emploi du Temps" />
+    </HBox>
 
-</AnchorPane>
+    <TableView fx:id="emploiDuTempsTableView" VBox.vgrow="ALWAYS" style="-fx-border-color: #BA68C8; -fx-border-width: 1px;">
+        <columns>
+            <TableColumn text="Jour" prefWidth="100">
+                <cellValueFactory>
+                    <PropertyValueFactory property="jour" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Heure Début" prefWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="heureDebut" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Heure Fin" prefWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="heureFin" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Matière" prefWidth="150">
+                <cellValueFactory>
+                    <PropertyValueFactory property="matiere" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Enseignant" prefWidth="150">
+                <cellValueFactory>
+                    <PropertyValueFactory property="enseignantNomComplet" /> </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Salle" prefWidth="80">
+                <cellValueFactory>
+                    <PropertyValueFactory property="salle" />
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10.0">
+        <Button text="Se Déconnecter" onAction="#handleLogout" style="-fx-background-color: #EF5350; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+    </HBox>
+</VBox>
