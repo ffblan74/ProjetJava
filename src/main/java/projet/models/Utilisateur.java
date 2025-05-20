@@ -2,7 +2,7 @@ package projet.models;
 
 import projet.models.Role;
 
-public abstract class Utilisateur {
+public class Utilisateur {
     protected int idUtilisateur;
     protected String nom;
     protected String prenom;
@@ -79,5 +79,29 @@ public abstract class Utilisateur {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String[] toCSVArray(String groupe, String emploiDuTempsId, String matiereEnseignee) {
+        // Gérer les cas où les champs spécifiques pourraient être null ou "None" pour les convertir en chaîne vide pour CSV
+        String groupeCSV = (groupe == null || groupe.trim().isEmpty() || groupe.equalsIgnoreCase("None")) ? "" : groupe;
+        String emploiDuTempsIdCSV = (emploiDuTempsId == null || emploiDuTempsId.trim().isEmpty() || emploiDuTempsId.equalsIgnoreCase("None")) ? "" : emploiDuTempsId;
+        String matiereEnseigneeCSV = (matiereEnseignee == null || matiereEnseignee.trim().isEmpty() || matiereEnseignee.equalsIgnoreCase("None")) ? "" : matiereEnseignee;
+
+        // Si la matière enseignée contient un ; ou des " , l'entourer de guillemets et échapper les "
+        if (matiereEnseigneeCSV.contains(";") || matiereEnseigneeCSV.contains("\"")) {
+            matiereEnseigneeCSV = "\"" + matiereEnseigneeCSV.replace("\"", "\"\"") + "\"";
+        }
+
+        return new String[]{
+                String.valueOf(getIdUtilisateur()),
+                getNom(),
+                getPrenom(),
+                getEmail(),
+                getMotDePasse(),
+                getRole().name(),
+                groupeCSV,
+                emploiDuTempsIdCSV,
+                matiereEnseigneeCSV
+        };
     }
 }

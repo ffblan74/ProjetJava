@@ -1,64 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #E8F5E9; -fx-padding: 20;"
-      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="projet.controleurs.professeur.AccueilProfController"> <Label text="Emploi du Temps du Professeur" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;">
-    <VBox.margin>
-        <Insets bottom="10.0" />
-    </VBox.margin>
-</Label>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
 
-    <TableView fx:id="tableViewEmploiDuTemps" VBox.vgrow="ALWAYS" style="-fx-border-color: #4CAF50; -fx-border-width: 1px;">
-        <columns>
-            <TableColumn text="Jour" prefWidth="100">
-                <cellValueFactory>
-                    <PropertyValueFactory property="jour" />
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Heure Début" prefWidth="120">
-                <cellValueFactory>
-                    <PropertyValueFactory property="heureDebut" />
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Heure Fin" prefWidth="120">
-                <cellValueFactory>
-                    <PropertyValueFactory property="heureFin" />
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Matière" prefWidth="150">
-                <cellValueFactory>
-                    <PropertyValueFactory property="matiere" />
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Classe" prefWidth="100">
-                <cellValueFactory>
-                    <PropertyValueFactory property="classe" />
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn text="Salle" prefWidth="80">
-                <cellValueFactory>
-                    <PropertyValueFactory property="salle" />
-                </cellValueFactory>
-            </TableColumn>
-        </columns>
-    </TableView>
+            prefHeight="400.0" prefWidth="600.0">
+    <Label text="Bienvenue sur la page d'accueil Professeur !"
+           layoutX="150" layoutY="180"
+           style="-fx-font-size: 24px; -fx-text-fill: #2a9df4;" />
 
-    <HBox spacing="10.0" alignment="CENTER">
-        <Button text="Ajouter un Cours" onAction="#handleAddCours" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-        <Button text="Modifier un Cours" onAction="#handleModifyCours" style="-fx-background-color: #8BC34A; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-        <Button text="Supprimer un Cours" onAction="#handleDeleteCours" style="-fx-background-color: #B2DFDB; -fx-text-fill: #3E2723; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-    </HBox>
-
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
-</VBox>
+</AnchorPane>

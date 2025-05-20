@@ -2,7 +2,7 @@ package projet.models;
 
 import java.util.List;
 
-public class Salle {
+class Salle {
     private int idSalle;
     private String numeroSalle;
     private int capacite;

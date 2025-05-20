@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -44,5 +45,22 @@ public class NavigationUtil {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public static void afficherInformation(String titre, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titre);
+        alert.setHeaderText(null); // Pas d'en-tête pour un simple message d'information
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public static boolean afficherConfirmation(String titre, String message) {
+        Alert alerte = new Alert(Alert.AlertType.CONFIRMATION);
+        alerte.titleProperty().set(titre);
+        alerte.headerTextProperty().set(null); // Pas d'en-tête
+        alerte.contentTextProperty().set(message);
+
+        return alerte.showAndWait().orElse(null) == ButtonType.OK;
     }
 }
