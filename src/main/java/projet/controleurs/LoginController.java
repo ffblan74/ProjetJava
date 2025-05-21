@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LoginController {
     @FXML
@@ -99,6 +100,10 @@ public class LoginController {
 
 
     public static Utilisateur convertirDepuisCSV(String[] data) {
+        if (data.length < 6) {
+            throw new IllegalArgumentException("Données CSV insuffisantes");
+        }
+
         int idUtilisateur = Integer.parseInt(data[0]);
         String nom = data[1];
         String prenom = data[2];
@@ -106,15 +111,25 @@ public class LoginController {
         String motDePasse = data[4];
         String role = data[5];
 
-
         switch (role) {
             case "ETUDIANT":
-                String groupe = data[6].equals("None") ? null : data[6];
-                Integer emploiDuTempsId = data[8].equals("None") ? null : Integer.parseInt(data[8]);
-                return new Etudiant(idUtilisateur, nom, prenom, email, motDePasse, groupe, emploiDuTempsId);
+                // Gestion du groupe avec vérification des colonnes vides
+                String groupe = (data.length > 6 && !data[6].trim().isEmpty()) ? data[6] : null;
+                return new Etudiant(idUtilisateur, nom, prenom, email, motDePasse, groupe);
 
             case "ENSEIGNANT":
-                List<String> matiereEnseignee = data[9].equals("None") ? new ArrayList<>() : new ArrayList<>(Arrays.asList(data[9].replace("[", "").replace("]", "").replace("\"", "").split(",")));
+                // Gestion des matières enseignées avec vérification des colonnes vides
+                List<String> matiereEnseignee = new ArrayList<>();
+                if (data.length > 7 && !data[7].trim().isEmpty()) {
+                    matiereEnseignee = Arrays.stream(
+                                    data[7].replace("[", "")
+                                            .replace("]", "")
+                                            .replace("\"", "")
+                                            .split(",")
+                            )
+                            .filter(matiere -> !matiere.trim().isEmpty())
+                            .collect(Collectors.toList());
+                }
                 return new Enseignant(idUtilisateur, nom, prenom, email, motDePasse, matiereEnseignee);
 
             case "ADMINISTRATEUR":
@@ -124,5 +139,6 @@ public class LoginController {
                 throw new IllegalArgumentException("Rôle inconnu : " + role);
         }
     }
+
 
 }
