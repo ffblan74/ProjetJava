@@ -7,7 +7,7 @@ import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import projet.controleurs.CRUDcsvController;
-import projet.models.Role;
+import projet.models.Role; // Import de l'enum Role
 import projet.models.Utilisateur;
 import projet.utils.NavigationUtil;
 import projet.utils.Transmissible;
@@ -23,21 +23,21 @@ public class CreerUtilisateurController implements Transmissible {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
     @FXML private ComboBox<String> roleComboBox;
-    @FXML private Button creerUtilisateurButton; // Ce bouton deviendra "Créer" ou "Modifier"
+    @FXML private Button creerUtilisateurButton;
     @FXML private Button annulerCreationButton;
 
-    // TODO: Si tu as ajouté des champs FXML pour 'groupe', 'emploiDuTempsId', 'matiereEnseignee', déclare-les ici :
-    // @FXML private TextField groupeField;
-    // @FXML private TextField emploiDuTempsIdField;
-    // @FXML private TextField matiereEnseigneeField;
+    // Champs FXML pour le groupe
+    @FXML private Label groupeLabel;
+    @FXML private TextField groupeField;
 
-
+    // ObservableList pour la ComboBox
     private ObservableList<String> roles = FXCollections.observableArrayList("ETUDIANT", "ENSEIGNANT", "ADMINISTRATEUR");
 
-    private Utilisateur utilisateurConnecte; // L'utilisateur admin connecté (pour revenir à l'accueil admin)
-    private Utilisateur utilisateurAModifier; // L'utilisateur que l'on est en train de modifier
-    private String[] ligneCSVOriginaleAModifier; // La ligne CSV complète de l'utilisateur à modifier (9 champs)
+    private Utilisateur utilisateurConnecte;
+    private Utilisateur utilisateurAModifier;
+    private String[] ligneCSVOriginaleAModifier; // La ligne CSV complète de l'utilisateur à modifier
 
+    // IMPORTANT : L'en-tête doit correspondre EXACTEMENT aux 9 champs de ta méthode toCSVArray
     private static final String CHEMIN_FICHIER_UTILISATEURS = "src/main/resources/projet/csv/utilisateurs.csv";
     private static final String CSV_EN_TETE = "idUtilisateur;nom;prenom;email;motDePasse;role;groupe;emploiDuTempsId;matiereEnseignee";
 
@@ -45,17 +45,33 @@ public class CreerUtilisateurController implements Transmissible {
     @FXML
     public void initialize() {
         roleComboBox.setItems(roles);
-        // Si tu as des champs supplémentaires, tu peux les initialiser ici aussi
+
+        // Initialiser les champs groupe cachés par défaut
+        groupeLabel.setVisible(false);
+        groupeLabel.setManaged(false); // Important pour ne pas prendre d'espace dans le layout
+        groupeField.setVisible(false);
+        groupeField.setManaged(false); // Important pour ne pas prendre d'espace dans le layout
+
+        // Ajouter un listener à la ComboBox des rôles pour gérer la visibilité du champ groupe
+        roleComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
+            boolean isStudent = "ETUDIANT".equals(newValue);
+            groupeLabel.setVisible(isStudent);
+            groupeLabel.setManaged(isStudent);
+            groupeField.setVisible(isStudent);
+            groupeField.setManaged(isStudent);
+
+            // Réinitialiser le champ groupe si le rôle change pour éviter des valeurs résiduelles
+            if (!isStudent) {
+                groupeField.setText("");
+            }
+        });
     }
 
     @Override
     public void transmettreDonnees(Object data) {
         if (data instanceof Utilisateur) {
-            // C'est l'utilisateur admin qui se connecte au début
             this.utilisateurConnecte = (Utilisateur) data;
-            initialiserPage(); // Cela va juste faire un print pour l'instant
         } else if (data instanceof Object[] && ((Object[]) data).length == 2) {
-            // C'est un tableau d'objets pour la modification : {Utilisateur, String[]}
             Object[] transmittedData = (Object[]) data;
             if (transmittedData[0] instanceof Utilisateur && transmittedData[1] instanceof String[]) {
                 this.utilisateurAModifier = (Utilisateur) transmittedData[0];
@@ -68,7 +84,6 @@ public class CreerUtilisateurController implements Transmissible {
             }
         } else {
             System.err.println("Données inattendues transmises au contrôleur CreerUtilisateurController.");
-            // Récupérer l'utilisateur connecté via la méthode statique si aucune donnée n'a été transmise
             this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
             if (this.utilisateurConnecte == null) {
                 NavigationUtil.afficherErreur("Aucun utilisateur administrateur connecté. Redirection.");
@@ -83,15 +98,31 @@ public class CreerUtilisateurController implements Transmissible {
             prenomField.setText(utilisateurAModifier.getPrenom());
             emailField.setText(utilisateurAModifier.getEmail());
             passwordField.setText(""); // Ne pré-remplis PAS le mot de passe pour des raisons de sécurité
-            roleComboBox.setValue(utilisateurAModifier.getRole().name());
+
+            // Assure que le rôle de l'utilisateur à modifier est bien un String avant de le passer à setValue
+            roleComboBox.setValue(utilisateurAModifier.getRole().name()); // Convertir l'enum Role en String
+
+            // Gérer la visibilité et le contenu du champ groupe pour la modification
+            boolean isStudent = utilisateurAModifier.getRole().name().equals("ETUDIANT");
+            groupeLabel.setVisible(isStudent);
+            groupeLabel.setManaged(isStudent);
+            groupeField.setVisible(isStudent);
+            groupeField.setManaged(isStudent);
+
+            // Si c'est un étudiant, pré-remplir le champ groupe depuis la ligne CSV originale
+            // (car 'groupe' n'est pas une propriété de l'objet Utilisateur dans ton modèle actuel)
+            if (isStudent && ligneCSVOriginaleAModifier.length > 6) { // L'index 6 correspond à 'groupe'
+                String groupeOriginal = ligneCSVOriginaleAModifier[6].trim();
+                if (!groupeOriginal.equalsIgnoreCase("None") && !groupeOriginal.isEmpty()) {
+                    groupeField.setText(groupeOriginal);
+                } else {
+                    groupeField.setText("");
+                }
+            } else {
+                groupeField.setText(""); // Vider si ce n'est pas un étudiant ou pas de groupe initial
+            }
 
             creerUtilisateurButton.setText("Modifier l'utilisateur");
-
-            // TODO: Si tu as des champs pour groupe, emploiDuTempsId, matiereEnseignee dans ton FXML, pré-remplis-les ici
-            // Assure-toi que ligneCSVOriginaleAModifier a assez d'éléments avant d'y accéder.
-            // if (ligneCSVOriginaleAModifier.length > 6) groupeField.setText(ligneCSVOriginaleAModifier[6]);
-            // if (ligneCSVOriginaleAModifier.length > 7) emploiDuTempsIdField.setText(ligneCSVOriginaleAModifier[7]);
-            // if (ligneCSVOriginaleAModifier.length > 8) matiereEnseigneeField.setText(ligneCSVOriginaleAModifier[8]);
         }
     }
 
@@ -107,62 +138,73 @@ public class CreerUtilisateurController implements Transmissible {
             return;
         }
 
-        Role roleEnum = Role.valueOf(roleStr.toUpperCase()); // Assure-toi que le rôle est en majuscules
+        // Conversion du String du ComboBox vers l'enum Role pour le constructeur Utilisateur
+        Role roleEnum = Role.valueOf(roleStr.toUpperCase());
+
+        // Récupération des valeurs pour les champs spécifiques (groupe, emploiDuTempsId, matiereEnseignee)
+        // Ces valeurs seront passées à la méthode toCSVArray, car ce ne sont pas des champs de l'objet Utilisateur
+        String groupe = ""; // Sera rempli pour les étudiants
+        String emploiDuTempsId = ""; // Pas de champ FXML pour l'instant, donc vide par défaut
+        String matiereEnseignee = ""; // Pas de champ FXML pour l'instant, donc vide par défaut
+
+        if ("ETUDIANT".equals(roleStr)) {
+            groupe = groupeField.getText().trim();
+            if (groupe.isEmpty()) {
+                NavigationUtil.afficherErreur("Veuillez saisir la lettre de la classe/groupe pour l'étudiant.");
+                return;
+            }
+            if (!groupe.matches("^[A-Z]$")) { // Validation: une seule lettre majuscule (A-Z)
+                NavigationUtil.afficherErreur("Le groupe doit être une seule lettre majuscule (Ex: A, B, C).");
+                return;
+            }
+        }
+        // Pour les enseignants, matiereEnseignee reste vide/None pour l'instant (pas de champ FXML)
+        // Pour les administrateurs, emploiDuTempsId et matiereEnseignee restent vides/None
 
         try {
-            // Lecture de toutes les lignes pour pouvoir réécrire ou trouver le prochain ID
             List<String[]> toutesLesLignes = CRUDcsvController.lire(CHEMIN_FICHIER_UTILISATEURS);
             List<String[]> lignesSansEnTete = (toutesLesLignes.isEmpty() || toutesLesLignes.get(0)[0].equals("idUtilisateur"))
-                    ? new ArrayList<>(toutesLesLignes.subList(1, toutesLesLignes.size())) // Exclure l'en-tête
-                    : new ArrayList<>(toutesLesLignes); // Pas d'en-tête, toutes les lignes sont des données
-
+                    ? new ArrayList<>(toutesLesLignes.subList(1, toutesLesLignes.size()))
+                    : new ArrayList<>(toutesLesLignes);
 
             if (utilisateurAModifier == null) { // Mode Création
                 int prochainId = calculerProchainId(lignesSansEnTete);
 
-                // Récupère les valeurs pour les 3 champs spécifiques (vides à la création si pas de champs FXML)
-                String groupe = ""; // TODO: remplacer par groupeField.getText() si tu as le champ
-                String emploiDuTempsId = ""; // TODO: remplacer par emploiDuTempsIdField.getText() si tu as le champ
-                String matiereEnseignee = ""; // TODO: remplacer par matiereEnseigneeField.getText() si tu as le champ
-
+                // Instancier le nouvel Utilisateur avec le rôle ENUM
                 Utilisateur nouvelUtilisateur = new Utilisateur(prochainId, nom, prenom, email, password, roleEnum);
 
-                // Générer la ligne CSV complète en utilisant la méthode toCSVArray
-                String[] nouvelleLigneCSV = nouvelUtilisateur.toCSVArray(groupe, emploiDuTempsId, matiereEnseignee);
-
-                // Ajouter l'en-tête si le fichier est vide
+                // Ajouter l'en-tête si le fichier est vide ou n'a que l'en-tête
                 if (toutesLesLignes.isEmpty() || (toutesLesLignes.size() == 1 && toutesLesLignes.get(0)[0].equals("idUtilisateur"))) {
                     CRUDcsvController.ajouter(CHEMIN_FICHIER_UTILISATEURS, CSV_EN_TETE.split(";"));
                 }
-                CRUDcsvController.ajouter(CHEMIN_FICHIER_UTILISATEURS, nouvelleLigneCSV);
+                // Passer les arguments spécifiques à toCSVArray()
+                CRUDcsvController.ajouter(CHEMIN_FICHIER_UTILISATEURS, nouvelUtilisateur.toCSVArray(groupe, emploiDuTempsId, matiereEnseignee));
                 NavigationUtil.afficherInformation("Succès", "Utilisateur créé avec succès !");
 
             } else { // Mode Modification
                 int idAModifier = utilisateurAModifier.getIdUtilisateur();
-                // Si le champ mot de passe est vide, on garde l'ancien mot de passe
                 String motDePasseFinal = password.isEmpty() ? utilisateurAModifier.getMotDePasse() : password;
 
-                // Récupère les 3 derniers champs de la ligne CSV originale pour les conserver
-                // Sauf si tu as des champs pour eux dans le FXML, dans ce cas utilise les valeurs des champs.
-                String groupeModifie = ligneCSVOriginaleAModifier.length > 6 ? ligneCSVOriginaleAModifier[6] : "";
+                // Récupérer les valeurs existantes pour emploiDuTempsId et matiereEnseignee
+                // Celles-ci doivent venir de la ligne CSV originale car elles ne sont pas dans l'objet Utilisateur
                 String emploiDuTempsIdModifie = ligneCSVOriginaleAModifier.length > 7 ? ligneCSVOriginaleAModifier[7] : "";
                 String matiereEnseigneeModifie = ligneCSVOriginaleAModifier.length > 8 ? ligneCSVOriginaleAModifier[8] : "";
 
-                // TODO: Si tu as des champs pour 'groupe', 'emploiDuTempsId', 'matiereEnseignee', utilise leurs valeurs ici:
-                // String groupeModifie = groupeField.getText();
-                // String emploiDuTempsIdModifie = emploiDuTempsIdField.getText();
-                // String matiereEnseigneeModifie = matiereEnseigneeField.getText();
+                // Le 'groupe' vient soit du champ, soit il est vidé si le rôle n'est plus étudiant
+                String groupeModifie = groupe; // Initialiser avec la valeur récupérée ci-dessus pour ETUDIANT
 
+                if (!"ETUDIANT".equals(roleStr)) {
+                    groupeModifie = ""; // Vider le groupe si ce n'est plus un étudiant
+                }
 
+                // Instancier l'Utilisateur mis à jour avec le rôle ENUM
                 Utilisateur utilisateurMaj = new Utilisateur(idAModifier, nom, prenom, email, motDePasseFinal, roleEnum);
 
-                // Générer la ligne CSV mise à jour, en conservant les 3 derniers champs
-                String[] ligneCSVMaj = utilisateurMaj.toCSVArray(groupeModifie, emploiDuTempsIdModifie, matiereEnseigneeModifie);
-
-                CRUDcsvController.mettreAJour(CHEMIN_FICHIER_UTILISATEURS, 0, String.valueOf(idAModifier), ligneCSVMaj);
+                // Appeler mettreAJour avec les arguments spécifiques pour toCSVArray()
+                CRUDcsvController.mettreAJour(CHEMIN_FICHIER_UTILISATEURS, 0, String.valueOf(idAModifier), utilisateurMaj.toCSVArray(groupeModifie, emploiDuTempsIdModifie, matiereEnseigneeModifie));
                 NavigationUtil.afficherInformation("Succès", "Utilisateur mis à jour avec succès !");
             }
-            retournerAccueilAdmin(); // Retourner à l'accueil admin après l'opération
+            retournerAccueilAdmin();
         } catch (IOException e) {
             System.err.println("Erreur lors de l'opération utilisateur : " + e.getMessage());
             NavigationUtil.afficherErreur("Erreur lors de la création/modification de l'utilisateur.");
@@ -181,12 +223,11 @@ public class CreerUtilisateurController implements Transmissible {
             NavigationUtil.afficherErreur("Adresse email invalide.");
             return false;
         }
-        // Le mot de passe ne doit pas être vide pour la création, mais peut l'être pour la modification si on ne le change pas.
         if (utilisateurAModifier == null && (password == null || password.isEmpty())) {
             NavigationUtil.afficherErreur("Le mot de passe ne peut pas être vide lors de la création.");
             return false;
         }
-        if (!password.isEmpty() && password.length() < 6) { // Vérifie la longueur si le mot de passe est saisi
+        if (!password.isEmpty() && password.length() < 6) {
             NavigationUtil.afficherErreur("Le mot de passe doit contenir au moins 6 caractères.");
             return false;
         }
@@ -196,23 +237,14 @@ public class CreerUtilisateurController implements Transmissible {
     @FXML
     private void retournerAccueilAdmin() {
         try {
-            // Ferme la fenêtre actuelle de création/modification
             Stage stageActuel = (Stage) creerUtilisateurButton.getScene().getWindow();
             stageActuel.close();
 
-            // Puisque la fenêtre AccueilAdmin est ouverte en arrière-plan,
-            // tu peux lui envoyer un signal pour qu'elle se rafraîchisse.
-            // Cela dépend de la manière dont tu gères les stages et les contrôleurs.
-            // Si tu veux la recréer, alors le code ci-dessous est correct,
-            // mais l'utilisateur connecté doit venir du Utilisateur.getUtilisateurConnecte()
-            // pour éviter de transmettre l'utilisateur modifié par erreur.
-
-            // Solution robuste : rouvrir et transmettre l'utilisateur ADMIN connecté (via la classe statique)
             NavigationUtil.ouvrirNouvelleFenetre(
                     "/projet/fxml/accueil-admin-gerer-utilisateur.fxml",
                     "Accueil Admin",
-                    null, // Il n'y a plus de stage à fermer depuis cette méthode
-                    Utilisateur.getUtilisateurConnecte() // IMPORTANT: Transmet l'admin connecté
+                    null,
+                    Utilisateur.getUtilisateurConnecte()
             );
 
         } catch (Exception e) {
@@ -234,12 +266,5 @@ public class CreerUtilisateurController implements Transmissible {
             }
         }
         return dernierId + 1;
-    }
-
-    // Initialise la page (juste un print pour l'instant)
-    private void initialiserPage() {
-        if (utilisateurConnecte != null) {
-            System.out.println("Utilisateur connecté à CreerUtilisateurController: " + utilisateurConnecte.getNom() + " " + utilisateurConnecte.getPrenom() + " (Rôle: " + utilisateurConnecte.getRole() + ").");
-        }
     }
 }

@@ -174,7 +174,7 @@ public class AccueilUtilisateurController implements Transmissible {
 
         try {
             NavigationUtil.ouvrirNouvelleFenetre(
-                    "/projet/fxml/creer_utilisateur.fxml", // Chemin FXML corrigé
+                    "/projet/fxml/creer-utilisateur.fxml", // Chemin FXML corrigé
                     "Modifier utilisateur",
                     (Stage) tableViewUtilisateurs.getScene().getWindow(),
                     dataToTransmit

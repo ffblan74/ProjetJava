@@ -4,11 +4,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import java.net.URL;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class NavigationUtil {
 
@@ -105,4 +107,29 @@ public class NavigationUtil {
 
         return alerte.showAndWait().orElse(null) == ButtonType.OK;
     }
+
+    public static void afficherSucces(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION); // Ou AlertType.CONFIRMATION selon le besoin
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    public static boolean demanderConfirmation(String titre, String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(titre);
+        alert.setHeaderText(null); // Pas d'en-tête, on utilise le titre
+        alert.setContentText(message);
+
+        // Personnalisation des boutons (optionnel)
+        ButtonType buttonTypeOui = new ButtonType("Oui", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeNon = new ButtonType("Non", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(buttonTypeOui, buttonTypeNon);
+
+        // Affichage de la boîte de dialogue et attente de la réponse de l'utilisateur
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == buttonTypeOui;
+    }
+
 }

@@ -2,6 +2,8 @@ package projet.models;
 
 import projet.models.Role;
 
+import java.util.Arrays;
+
 public class Utilisateur {
     protected int idUtilisateur;
     protected String nom;
@@ -104,4 +106,5 @@ public class Utilisateur {
                 matiereEnseigneeCSV
         };
     }
+
 }
