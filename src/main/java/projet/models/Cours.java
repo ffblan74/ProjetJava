@@ -48,8 +48,8 @@ public class Cours {
     public int getEnseignantId() { return enseignantId; }
     public int getSalleId() { return salleId; }
     public LocalDate getDate() { return date; }
-    public LocalTime getHeureDebut() { return heureDebut; }
-    public LocalTime getHeureFin() { return heureFin; }
+    public String getHeureDebut() { return String.valueOf(heureDebut); }
+    public String getHeureFin() { return String.valueOf(heureFin); }
     public String getClasse() { return classe; }
     public String getEnseignantNomComplet() { return enseignantNomComplet; }
     public String getSalle() { return salle; }

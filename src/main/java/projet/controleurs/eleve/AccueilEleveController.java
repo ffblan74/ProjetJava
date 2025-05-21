@@ -1,4 +1,5 @@
-package projet.controleurs.professeur;
+package projet.controleurs.eleve;
+
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,53 +10,45 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.layout.ColumnConstraints;
-import javafx.geometry.Insets;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.paint.Color;
 
+import projet.controleurs.CRUDcsvController;
+import projet.models.Etudiant;
 import projet.models.Utilisateur;
 import projet.utils.NavigationUtil;
 import projet.models.Cours;
-import projet.controleurs.CRUDcsvController;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
-import java.time.LocalTime;
-import java.time.Duration;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.io.IOException;
 
-public class AccueilProfController {
+public class AccueilEleveController {
 
     @FXML private Label labelBienvenue;
     @FXML private Label labelSemaine;
     @FXML private Label labelStats;
     @FXML private GridPane grilleEmploi;
-    @FXML private ComboBox<String> filtreClasse;
     @FXML private ComboBox<String> filtreMatiere;
 
     private LocalDate dateActuelle;
 
-    // Jours de la semaine (lundi à vendredi)
     private final String[] JOURS = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"};
 
-    // Créneaux 30 min entre 8h et 17h30 inclus
     private final String[] HEURES_30MIN = {
             "08:00", "08:30", "09:00", "09:30",
             "10:00", "10:30", "11:00", "11:30",
-            "12:00", "12:30", // Si pause déjeuner pas utilisée, tu peux gérer différemment
+            "12:00", "12:30",
             "13:00", "13:30", "14:00", "14:30",
             "15:00", "15:30", "16:00", "16:30",
             "17:00", "17:30"
     };
 
     private static final String CHEMIN_COURS = "src/main/resources/projet/csv/cours.csv";
-    private Utilisateur utilisateurConnecte;
+    private Etudiant utilisateurConnecte;
     private List<Cours> listeCours;
 
     @FXML
@@ -63,17 +56,17 @@ public class AccueilProfController {
         dateActuelle = LocalDate.now();
 
         if (Utilisateur.getUtilisateurConnecte() != null) {
-            this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
+            this.utilisateurConnecte = (Etudiant) Etudiant.getUtilisateurConnecte();
         }
-        setEnseignant(utilisateurConnecte);
+        setEleve(utilisateurConnecte);
 
         initialiserGrille();
         afficherSemaine();
     }
 
-    public void setEnseignant(Utilisateur enseignant) {
-        this.utilisateurConnecte = enseignant;
-        labelBienvenue.setText("Bienvenue, " + enseignant.getPrenom() + " " + enseignant.getNom());
+    public void setEleve(Utilisateur eleve) {
+        this.utilisateurConnecte = (Etudiant) eleve;
+        labelBienvenue.setText("Bienvenue, " + eleve.getPrenom() + " " + eleve.getNom());
         chargerCours();
     }
 
@@ -88,7 +81,8 @@ public class AccueilProfController {
             for (String[] ligne : lignes) {
                 try {
                     Cours cours = Cours.fromCsv(ligne);
-                    if (cours.getEnseignantId() == utilisateurConnecte.getIdUtilisateur()) {
+                    // On ne garde que les cours de la classe de l'élève
+                    if (cours.getClasse().equals(utilisateurConnecte.getGroupe())) {
                         listeCours.add(cours);
                     }
                 } catch (Exception e) {
@@ -104,22 +98,16 @@ public class AccueilProfController {
     }
 
     private void initialiserFiltres() {
-        filtreClasse.setOnAction(e -> actualiserCours());
         filtreMatiere.setOnAction(e -> actualiserCours());
 
-        List<String> classes = new ArrayList<>();
         List<String> matieres = new ArrayList<>();
 
         for (Cours cours : listeCours) {
-            if (!classes.contains(cours.getClasse())) {
-                classes.add(cours.getClasse());
-            }
             if (!matieres.contains(cours.getMatiere())) {
                 matieres.add(cours.getMatiere());
             }
         }
 
-        filtreClasse.getItems().setAll(classes);
         filtreMatiere.getItems().setAll(matieres);
     }
 
@@ -179,10 +167,9 @@ public class AccueilProfController {
                 try {
                     LocalDate dateCours = cours.getDate();
 
-                    boolean matchClasse = filtreClasse.getValue() == null || filtreClasse.getValue().equals(cours.getClasse());
                     boolean matchMatiere = filtreMatiere.getValue() == null || filtreMatiere.getValue().equals(cours.getMatiere());
 
-                    if (estDansLaSemaineActuelle(dateCours) && matchClasse && matchMatiere) {
+                    if (estDansLaSemaineActuelle(dateCours) && matchMatiere) {
                         ajouterCoursALaGrille(cours);
                     }
                 } catch (Exception e) {
@@ -206,7 +193,7 @@ public class AccueilProfController {
         }
 
         int span = finIndex - debutIndex;
-        if (span <= 0) span = 1; // minimum 1 case
+        if (span <= 0) span = 1;
 
         VBox cellule = new VBox(5);
         cellule.setStyle("-fx-background-color: #2196F3; -fx-padding: 5; -fx-background-radius: 5;");
@@ -225,16 +212,15 @@ public class AccueilProfController {
 
         cellule.getChildren().addAll(matiere, classe, salle);
 
-        // Supprimer la cellule vide sous-jacente pour éviter superposition
         grilleEmploi.getChildren().removeIf(node ->
-                GridPane.getRowIndex(node) != null &&
-                        GridPane.getColumnIndex(node) != null &&
-                        GridPane.getRowIndex(node) == debutIndex + 1 &&
-                        GridPane.getColumnIndex(node) == jourIndex + 1
+                javafx.scene.layout.GridPane.getRowIndex(node) != null &&
+                        javafx.scene.layout.GridPane.getColumnIndex(node) != null &&
+                        javafx.scene.layout.GridPane.getRowIndex(node) == debutIndex + 1 &&
+                        javafx.scene.layout.GridPane.getColumnIndex(node) == jourIndex + 1
         );
 
         grilleEmploi.add(cellule, jourIndex + 1, debutIndex + 1);
-        GridPane.setRowSpan(cellule, span);
+        javafx.scene.layout.GridPane.setRowSpan(cellule, span);
     }
 
     private int trouverIndexHeure30Min(String heure) {
@@ -284,12 +270,6 @@ public class AccueilProfController {
         dateActuelle = dateActuelle.plusWeeks(1);
         afficherSemaine();
         actualiserCours();
-    }
-
-    @FXML
-    private void ajouterCours() {
-        // Ouvre la fenêtre d'ajout cours (à implémenter)
-        System.out.println("Ajouter cours (non implémenté)");
     }
 
     @FXML
