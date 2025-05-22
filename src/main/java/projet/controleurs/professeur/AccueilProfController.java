@@ -10,9 +10,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.geometry.Insets;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.RowConstraints;
 
 import projet.models.Utilisateur;
 import projet.utils.NavigationUtil;
@@ -20,10 +19,7 @@ import projet.models.Cours;
 import projet.controleurs.CRUDcsvController;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
-import java.time.LocalTime;
-import java.time.Duration;
 
 import java.util.List;
 import java.util.Locale;
@@ -88,7 +84,8 @@ public class AccueilProfController {
             for (String[] ligne : lignes) {
                 try {
                     Cours cours = Cours.fromCsv(ligne);
-                    if (cours.getEnseignantId() == utilisateurConnecte.getIdUtilisateur()) {
+                    // S'assurer que le cours appartient à l'enseignant connecté
+                    if (utilisateurConnecte != null && cours.getEnseignantId() == utilisateurConnecte.getIdUtilisateur()) {
                         listeCours.add(cours);
                     }
                 } catch (Exception e) {
@@ -196,22 +193,30 @@ public class AccueilProfController {
 
     private void ajouterCoursALaGrille(Cours cours) {
         LocalDate dateCours = cours.getDate();
-        int jourIndex = dateCours.getDayOfWeek().getValue() - 1; // Lundi=1
+        int jourIndex = dateCours.getDayOfWeek().getValue() - 1; // Lundi=1 (ajusté pour être 0-indexed)
+
+        // Vérifier que le jour est dans notre tableau de JOURS (Lundi à Vendredi)
+        if (jourIndex < 0 || jourIndex >= JOURS.length) {
+            System.err.println("Cours hors plage jours ouvrés (L-V): " + cours.getMatiere() + " le " + dateCours.getDayOfWeek());
+            return;
+        }
 
         int debutIndex = trouverIndexHeure30Min(cours.getHeureDebut());
         int finIndex = trouverIndexHeure30Min(cours.getHeureFin());
 
-        if (jourIndex < 0 || jourIndex >= JOURS.length || debutIndex < 0 || finIndex < 0) {
-            return; // Hors plage horaires ou jour non affiché
+        if (debutIndex < 0 || finIndex < 0 || debutIndex >= HEURES_30MIN.length || finIndex > HEURES_30MIN.length) {
+            System.err.println("Heures de cours invalides ou hors plage pour " + cours.getMatiere() + " : " + cours.getHeureDebut() + "-" + cours.getHeureFin());
+            return; // Heures invalides ou hors plage horaires
         }
 
         int span = finIndex - debutIndex;
-        if (span <= 0) span = 1; // minimum 1 case
+        if (span <= 0) span = 1; // Minimum 1 case, même si heure de début et fin sont identiques (devrait être évité par validation)
 
         VBox cellule = new VBox(5);
         cellule.setStyle("-fx-background-color: #2196F3; -fx-padding: 5; -fx-background-radius: 5;");
         cellule.setPrefWidth(150);
-        cellule.setPrefHeight(span * 30 - 10);
+        // Ajuster la hauteur pour tenir compte du span et du padding/spacing
+        cellule.setPrefHeight(span * grilleEmploi.getRowConstraints().get(debutIndex + 1).getPrefHeight() - 10); // -10 pour la marge/espacement visuel
         cellule.setMaxWidth(Double.MAX_VALUE);
 
         Label matiere = new Label(cours.getMatiere());
@@ -220,17 +225,24 @@ public class AccueilProfController {
         Label classe = new Label(cours.getClasse());
         classe.setStyle("-fx-text-fill: white;");
 
-        Label salle = new Label("Salle: " + cours.getSalle());
+        // Assurez-vous que la salle est disponible via un getter dans Cours ou Salle
+        // Pour l'instant, cours.getSalle() n'est pas directement disponible dans le modèle Cours que tu as fourni.
+        // Il faudrait charger la salle par son ID. Pour simplifier, je mets l'ID de la salle pour l'instant.
+        // Si tu veux le numéro de salle, il faudra ajouter une logique pour le récupérer depuis 'listeSalles'
+        // dans le CreerCoursProfController ou le charger ici aussi.
+        Label salle = new Label("Salle ID: " + cours.getSalleId());
         salle.setStyle("-fx-text-fill: white; -fx-font-size: 11;");
 
         cellule.getChildren().addAll(matiere, classe, salle);
 
         // Supprimer la cellule vide sous-jacente pour éviter superposition
+        // Il est important de bien cibler la cellule vide à supprimer.
         grilleEmploi.getChildren().removeIf(node ->
                 GridPane.getRowIndex(node) != null &&
                         GridPane.getColumnIndex(node) != null &&
-                        GridPane.getRowIndex(node) == debutIndex + 1 &&
-                        GridPane.getColumnIndex(node) == jourIndex + 1
+                        GridPane.getRowIndex(node) == debutIndex + 1 && // +1 car la ligne 0 est l'en-tête des jours
+                        GridPane.getColumnIndex(node) == jourIndex + 1 && // +1 car la colonne 0 est les heures
+                        node instanceof VBox // S'assurer qu'on supprime une cellule VBox (vide)
         );
 
         grilleEmploi.add(cellule, jourIndex + 1, debutIndex + 1);
@@ -250,8 +262,12 @@ public class AccueilProfController {
     private boolean estDansLaSemaineActuelle(LocalDate date) {
         WeekFields weekFields = WeekFields.of(Locale.getDefault());
         int semaineActuelle = dateActuelle.get(weekFields.weekOfWeekBasedYear());
+        int anneeActuelle = dateActuelle.getYear();
         int semaineDate = date.get(weekFields.weekOfWeekBasedYear());
-        return semaineDate == semaineActuelle;
+        int anneeDate = date.getYear();
+
+        // Comparer aussi l'année pour éviter les confusions de numéros de semaine sur différentes années
+        return semaineDate == semaineActuelle && anneeDate == anneeActuelle;
     }
 
     private VBox creerCelluleVide() {
@@ -268,8 +284,12 @@ public class AccueilProfController {
     }
 
     private void afficherStats() {
-        int nbCours = listeCours == null ? 0 : listeCours.size();
-        labelStats.setText("Nombre de cours cette semaine : " + nbCours);
+        // Filtrer les cours pour la semaine actuelle et l'enseignant connecté pour les stats
+        long nbCoursCetteSemaine = listeCours.stream()
+                .filter(cours -> estDansLaSemaineActuelle(cours.getDate()))
+                .count();
+
+        labelStats.setText("Nombre de cours cette semaine : " + nbCoursCetteSemaine);
     }
 
     @FXML
@@ -288,8 +308,17 @@ public class AccueilProfController {
 
     @FXML
     private void ajouterCours() {
-        // Ouvre la fenêtre d'ajout cours (à implémenter)
-        System.out.println("Ajouter cours (non implémenté)");
+        // This is the correct call based on the error message you provided:
+        // required: java.lang.String,java.lang.String,javafx.stage.Stage,java.lang.Object
+        NavigationUtil.ouvrirNouvelleFenetre(
+                "/projet/fxml/creer_cours_professeur.fxml", // 1st arg: FXML path (String)
+                "Créer un Nouveau Cours",                          // 2nd arg: Title (String)
+                (Stage) grilleEmploi.getScene().getWindow(),       // 3rd arg: Current Stage to close (Stage)
+                utilisateurConnecte                               // 4th arg: Data to pass (Object)
+        );
+        // After the creation form potentially closes and saves, reload and refresh
+        chargerCours();
+        actualiserCours();
     }
 
     @FXML
