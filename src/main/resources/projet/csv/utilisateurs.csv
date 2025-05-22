@@ -6,9 +6,9 @@ idUtilisateur;nom;prenom;email;motDePasse;role;groupe;matiereEnseignee
 9;test;test;tes@d.com;stekljfoemzkl;ETUDIANT;C;
 10;fdsqjklm;fdsqjklm;fdsqlm@fjkdsqlm.com;fjdskqlmqmslkdfj;ADMINISTRATEUR;;
 11;utilisateur;utilisateur;fdqmljfdklsmq@fds.com;fdsqfdsq;ENSEIGNANT;;
-12;prof;prof;prof@;prof;ENSEIGNANT;;;
-14;fdsq;fdqs;fdsq@f.com;fdsqjoikelz;ETUDIANT;;;
-15;fdsq;fdsq;fdsq@f.com;fdlskmqfj;ETUDIANT;;;
+12;prof;prof;prof@;prof;ENSEIGNANT;;["Mathématiques","Physique"]
+14;fdsq;fdqs;fdsq@f.com;fdsqjoikelz;ETUDIANT;C;;
+15;fdsq;fdsq;fdsq@f.com;fdlskmqfj;ETUDIANT;C;;
 16;fdsq;fdsq;fdsq@f.com;fjkqsdlmfjqdlsm;ETUDIANT;E;;
 17;fdsq;fdsq;fdsq@d.com;fdsqazreaz;ENSEIGNANT;;;
 18;xxxxxx;fdsqerfvdcs;fdsq@d.com;fdsqfdsqfezf;ENSEIGNANT;;;

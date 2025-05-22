@@ -6,7 +6,8 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import projet.models.Utilisateur;
-import projet.controleurs.CRUDcsvController;
+import projet.controleurs.CRUDcsvControllerProf;
+import projet.utils.Transmissible;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CreerCoursProfController {
+public class CreerCoursProfController implements Transmissible {
 
     @FXML private ComboBox<String> matiereComboBox;
     @FXML private Label matiereLabel;
@@ -27,41 +28,44 @@ public class CreerCoursProfController {
     @FXML private TextField heureDebutField;
     @FXML private TextField heureFinField;
     @FXML private ComboBox<String> salleIdComboBox;
-    @FXML private TextArea descriptionArea;
+    @FXML private TextArea descriptionArea; // Ce sera la colonne "description" (sujet du cours)
     @FXML private Label errorMessageLabel;
 
+    // Nous n'aurons PAS de @FXML private TextField codeMatiereField; si on ne veut pas le saisir
+
     private Utilisateur enseignantConnecte;
-    private Stage currentStage;
 
     private static final String CHEMIN_COURS = "src/main/resources/projet/csv/cours.csv";
-    private static final String CHEMIN_SALLES = "src/main/resources/projet/csv/salles.csv";
-    private static final String CHEMIN_CLASSES = "src/main/resources/projet/csv/classes.csv";
-    private static final String CHEMIN_UTILISATEURS = "src/main/resources/projet/csv/utilisateur.csv"; // Path to utilisateur CSV
+    private static final String CHEMIN_UTILISATEURS = "src/main/resources/projet/csv/utilisateurs.csv";
 
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-    // Hardcoded Fallback lists (used if CSVs are empty or not found)
-    private final List<String> FALLBACK_CLASSES = Arrays.asList(
-            "CP", "CE1", "CE2", "CM1", "CM2",
-            "6ème", "5ème", "4ème", "3ème",
-            "Seconde", "Première", "Terminale"
-    );
-    private final List<String> FALLBACK_SALLES = Arrays.asList("101", "102", "201", "Amphi A");
-    private final List<String> FALLBACK_MATIERES = Arrays.asList(
-            "Mathématiques", "Français", "Histoire-Géographie", "Sciences",
-            "Anglais", "Espagnol", "Allemand", "Physique-Chimie", "SVT",
-            "Éducation Physique et Sportive", "Arts Plastiques", "Musique"
+    private final List<String> FIXED_SALLE_NUMEROS = Arrays.asList("A101", "32432", "3454", "4", "B201", "C302", "D401", "Amphi X");
+    private final List<String> FIXED_CLASSES = Arrays.asList("A1", "A2", "A3", "P1", "P2");
+    private final List<String> FIXED_MATIERES = Arrays.asList(
+            "Mathématiques", "Physique", "SI", "Java", "Electronique", "Signal", "Anglais"
     );
 
+    // Mettez à jour cet en-tête pour qu'il corresponde à la structure à 10 colonnes
+    private final String[] ENTETE_COURS_CSV = {"idCours", "matiere", "codeMatiere", "description", "enseignantId", "salleId", "date", "heureDebut", "heureFin", "classe"};
 
-    public void setData(Stage stage, Utilisateur enseignant) {
-        this.currentStage = stage;
-        this.enseignantConnecte = enseignant;
-        initializeFields();
+
+    @Override
+    public void transmettreDonnees(Object data) {
+        System.out.println("DEBUG (CreerCoursProfController): transmettreDonnees() appelé.");
+        if (data instanceof Utilisateur) {
+            this.enseignantConnecte = (Utilisateur) data;
+            System.out.println("DEBUG (CreerCoursProfController): Utilisateur enseignant connecté reçu: " + enseignantConnecte.getNom());
+            initializeFields();
+        } else {
+            System.err.println("ERREUR (CreerCoursProfController): Données transmises via Transmissible ne sont pas de type Utilisateur.");
+            initializeFields();
+        }
     }
 
     @FXML
     public void initialize() {
+        System.out.println("DEBUG (CreerCoursProfController): initialize() de FXML appelé.");
         heureDebutField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (!newVal) {
                 validateTimeField(heureDebutField);
@@ -75,56 +79,49 @@ public class CreerCoursProfController {
     }
 
     private void initializeFields() {
-        // 1. Populate Matières (Subjects) based on the connected professor
+        System.out.println("DEBUG (CreerCoursProfController): initializeFields() - Début.");
         chargerMatieresEnseignees();
-
-        // 2. Populate Classes
         chargerClasses();
-
-        // 3. Populate Salles (Rooms)
         chargerSalles();
+        System.out.println("DEBUG (CreerCoursProfController): initializeFields() - Fin.");
     }
 
     private void chargerMatieresEnseignees() {
+        System.out.println("DEBUG (CreerCoursProfController): chargerMatieresEnseignees() - Début.");
         List<String> subjectsForThisProfessor = new ArrayList<>();
+
         if (enseignantConnecte != null) {
             try {
-                List<String[]> lignesUtilisateurs = CRUDcsvController.lire(CHEMIN_UTILISATEURS);
-                // Skip header if present
+                List<String[]> lignesUtilisateurs = CRUDcsvControllerProf.lire(CHEMIN_UTILISATEURS);
                 if (!lignesUtilisateurs.isEmpty() && lignesUtilisateurs.get(0).length > 0 && lignesUtilisateurs.get(0)[0].trim().equalsIgnoreCase("idUtilisateur")) {
                     lignesUtilisateurs.remove(0);
                 }
 
                 for (String[] ligne : lignesUtilisateurs) {
-                    // Check if line is valid and has enough columns for matiereEnseignee (index 7)
                     if (ligne.length > 7 && ligne[0] != null && !ligne[0].trim().isEmpty()) {
                         try {
                             int userId = Integer.parseInt(ligne[0].trim());
                             if (userId == enseignantConnecte.getIdUtilisateur()) {
-                                String matiereString = ligne[7].trim(); // Get the matiereEnseignee column
+                                String matiereString = ligne[7].trim();
 
-                                // --- Manual parsing for ["item1","item2"] format ---
                                 if (!matiereString.isEmpty()) {
-                                    // Remove leading/trailing brackets and split by ","
-                                    if (matiereString.startsWith("[") && matiereString.endsWith("]")) {
-                                        String content = matiereString.substring(1, matiereString.length() - 1);
-                                        String[] matieresArray = content.split("\",\""); // Split by ","
+                                    if (matiereString.startsWith("[\"") && matiereString.endsWith("\"]")) {
+                                        String content = matiereString.substring(2, matiereString.length() - 2);
+                                        String[] matieresArray = content.split("\",\"");
                                         for (String matiere : matieresArray) {
-                                            // Remove any remaining quotes
-                                            String cleanedMatiere = matiere.replace("\"", "").trim();
+                                            String cleanedMatiere = matiere.trim();
                                             if (!cleanedMatiere.isEmpty()) {
                                                 subjectsForThisProfessor.add(cleanedMatiere);
                                             }
                                         }
                                     } else {
-                                        // Handle cases where it might be a single string without brackets
                                         String cleanedMatiere = matiereString.replace("\"", "").trim();
                                         if (!cleanedMatiere.isEmpty()) {
                                             subjectsForThisProfessor.add(cleanedMatiere);
                                         }
                                     }
                                 }
-                                break; // Found the teacher, no need to continue
+                                break;
                             }
                         } catch (NumberFormatException e) {
                             System.err.println("ID utilisateur invalide dans le CSV: " + ligne[0]);
@@ -132,89 +129,56 @@ public class CreerCoursProfController {
                     }
                 }
             } catch (IOException e) {
-                System.err.println("Erreur lecture fichier utilisateurs (" + CHEMIN_UTILISATEURS + "): " + e.getMessage() + ". Utilisation des matières par défaut.");
+                System.err.println("Erreur lecture fichier utilisateurs (" + CHEMIN_UTILISATEURS + "): " + e.getMessage());
             }
         }
 
-        // Filter out any blank or null subjects (redundant after manual parsing but good safety)
         subjectsForThisProfessor = subjectsForThisProfessor.stream()
                 .filter(s -> s != null && !s.trim().isEmpty())
+                .distinct()
                 .collect(Collectors.toList());
 
-        if (subjectsForThisProfessor.isEmpty()) {
-            // Fallback if no specific subjects found or CSV error
-            matiereComboBox.getItems().addAll(FALLBACK_MATIERES);
-            matiereComboBox.setVisible(true); // Ensure ComboBox is visible for fallback
-            matiereLabel.setVisible(false);
-            errorMessageLabel.setText("Aucune matière attribuée à ce professeur, ou données invalides. Affichage des matières par défaut.");
-        } else if (subjectsForThisProfessor.size() == 1) {
-            matiereLabel.setText(subjectsForThisProfessor.get(0));
-            matiereLabel.setVisible(true);
-            matiereComboBox.setVisible(false);
-            matiereComboBox.setDisable(true);
-            errorMessageLabel.setText(""); // Clear error if successful
-        } else {
+        if (!subjectsForThisProfessor.isEmpty()) {
             matiereComboBox.getItems().addAll(subjectsForThisProfessor);
+            System.out.println("DEBUG (CreerCoursProfController): Matières chargées pour le professeur (" + (enseignantConnecte != null ? enseignantConnecte.getNom() : "N/A") + "): " + subjectsForThisProfessor);
+            if (subjectsForThisProfessor.size() == 1) {
+                matiereLabel.setText(subjectsForThisProfessor.get(0));
+                matiereLabel.setVisible(true);
+                matiereComboBox.setVisible(false);
+                matiereComboBox.setDisable(true);
+            } else {
+                matiereComboBox.setVisible(true);
+                matiereLabel.setVisible(false);
+            }
+            errorMessageLabel.setText("");
+        } else {
+            matiereComboBox.getItems().addAll(FIXED_MATIERES);
+            System.out.println("DEBUG (CreerCoursProfController): Aucune matière spécifique trouvée. Chargement depuis FIXED_MATIERES: " + FIXED_MATIERES);
             matiereComboBox.setVisible(true);
             matiereLabel.setVisible(false);
-            errorMessageLabel.setText(""); // Clear error if successful
+            errorMessageLabel.setText("Aucune matière spécifique attribuée. Affichage des matières par défaut.");
         }
+        System.out.println("DEBUG (CreerCoursProfController): Nombre d'éléments dans matiereComboBox: " + matiereComboBox.getItems().size());
+        System.out.println("DEBUG (CreerCoursProfController): chargerMatieresEnseignees() - Fin.");
     }
 
 
     private void chargerClasses() {
-        List<String> classes = new ArrayList<>();
-        try {
-            List<String[]> lignes = CRUDcsvController.lire(CHEMIN_CLASSES);
-            // Assuming classes.csv has a header "nomClasse" or is just a list of class names
-            if (!lignes.isEmpty() && lignes.get(0).length > 0 && lignes.get(0)[0].trim().equalsIgnoreCase("nomClasse")) {
-                lignes.remove(0); // Remove header
-            }
-            for (String[] ligne : lignes) {
-                if (ligne.length > 0 && ligne[0] != null) {
-                    String className = ligne[0].trim();
-                    if (!className.isEmpty()) {
-                        classes.add(className);
-                    }
-                }
-            }
-            if (!classes.isEmpty()) {
-                classeComboBox.getItems().addAll(classes);
-            } else {
-                classeComboBox.getItems().addAll(FALLBACK_CLASSES);
-            }
-        } catch (IOException e) {
-            System.err.println("Erreur lecture fichier classes (" + CHEMIN_CLASSES + "): " + e.getMessage() + ". Utilisation des classes par défaut.");
-            classeComboBox.getItems().addAll(FALLBACK_CLASSES);
-        }
+        System.out.println("DEBUG (CreerCoursProfController): chargerClasses() - Début.");
+        classeComboBox.getItems().addAll(FIXED_CLASSES);
+        System.out.println("DEBUG (CreerCoursProfController): Classes chargées depuis FIXED_CLASSES: " + FIXED_CLASSES + " dans ComboBox.");
+        System.out.println("DEBUG (CreerCoursProfController): Nombre d'éléments dans classeComboBox: " + classeComboBox.getItems().size());
+        errorMessageLabel.setText("");
+        System.out.println("DEBUG (CreerCoursProfController): chargerClasses() - Fin.");
     }
 
     private void chargerSalles() {
-        List<String> salles = new ArrayList<>();
-        try {
-            List<String[]> lignes = CRUDcsvController.lire(CHEMIN_SALLES);
-            // Assuming salles.csv has a header "idSalle"
-            if (!lignes.isEmpty() && lignes.get(0).length > 0 && lignes.get(0)[0].trim().equalsIgnoreCase("idSalle")) {
-                lignes.remove(0); // Remove header
-            }
-            for (String[] ligne : lignes) {
-                // Check if line has enough columns for idSalle (index 0)
-                if (ligne.length > 0 && ligne[0] != null) {
-                    String salleId = ligne[0].trim(); // Get the idSalle (first column)
-                    if (!salleId.isEmpty()) {
-                        salles.add(salleId);
-                    }
-                }
-            }
-            if (!salles.isEmpty()) {
-                salleIdComboBox.getItems().addAll(salles);
-            } else {
-                salleIdComboBox.getItems().addAll(FALLBACK_SALLES);
-            }
-        } catch (IOException e) {
-            System.err.println("Erreur lecture fichier salles (" + CHEMIN_SALLES + "): " + e.getMessage() + ". Utilisation des salles par défaut.");
-            salleIdComboBox.getItems().addAll(FALLBACK_SALLES);
-        }
+        System.out.println("DEBUG (CreerCoursProfController): chargerSalles() - Début.");
+        salleIdComboBox.getItems().addAll(FIXED_SALLE_NUMEROS);
+        System.out.println("DEBUG (CreerCoursProfController): Salles chargées depuis FIXED_SALLE_NUMEROS: " + FIXED_SALLE_NUMEROS + " dans ComboBox.");
+        System.out.println("DEBUG (CreerCoursProfController): Nombre d'éléments dans salleIdComboBox: " + salleIdComboBox.getItems().size());
+        errorMessageLabel.setText("");
+        System.out.println("DEBUG (CreerCoursProfController): chargerSalles() - Fin.");
     }
 
     private boolean validateTimeField(TextField field) {
@@ -235,19 +199,33 @@ public class CreerCoursProfController {
     @FXML
     private void enregistrerCours() {
         errorMessageLabel.setText("");
+        System.out.println("DEBUG (CreerCoursProfController): Début enregistrerCours().");
 
         String matiere = matiereLabel.isVisible() ? matiereLabel.getText() : matiereComboBox.getValue();
-        String classe = classeComboBox.getValue();
+        String classe = classeComboBox.getValue(); // La 10ème colonne
         LocalDate date = datePicker.getValue();
         String heureDebutStr = heureDebutField.getText();
         String heureFinStr = heureFinField.getText();
-        String salleIdStr = salleIdComboBox.getValue();
-        String description = descriptionArea.getText();
-        if (description == null || description.trim().isEmpty()) {
-            description = "";
+        String numeroSalleChoisi = salleIdComboBox.getValue();
+
+        // ** Récupérer la description (sujet du cours) depuis le TextArea existant **
+        // Ce champ est supposé être rempli par l'utilisateur pour le sujet du cours.
+        String descriptionCours = descriptionArea.getText();
+        if (descriptionCours == null || descriptionCours.trim().isEmpty()) {
+            descriptionCours = ""; // Assurez-vous que c'est une chaîne vide si non rempli
         }
 
-        // --- Validation ---
+        // ** Générer le codeMatiere automatiquement **
+        // Simple exemple: les 3-4 premières lettres de la matière en majuscules
+        String codeMatiere = "";
+        if (matiere != null && !matiere.isEmpty()) {
+            codeMatiere = matiere.substring(0, Math.min(matiere.length(), 4)).toUpperCase();
+            // Vous pouvez ajouter une logique plus complexe ici, par exemple un ID unique si nécessaire
+            // ou une correspondance à partir d'une liste prédéfinie.
+        }
+
+
+        // --- Validation --- (inchangé pour les champs, mais validation pour matiere essentielle pour codeMatiere)
         if (matiere == null || matiere.trim().isEmpty()) {
             errorMessageLabel.setText("Veuillez sélectionner une matière."); return;
         }
@@ -263,9 +241,14 @@ public class CreerCoursProfController {
         if (!validateTimeField(heureDebutField) || !validateTimeField(heureFinField)) {
             errorMessageLabel.setText("Les formats d'heure doivent être HH:mm."); return;
         }
-        if (salleIdStr == null || salleIdStr.trim().isEmpty()) {
+        if (numeroSalleChoisi == null || numeroSalleChoisi.trim().isEmpty()) {
             errorMessageLabel.setText("Veuillez sélectionner une salle."); return;
         }
+        // Validation pour la description (sujet du cours) si elle est obligatoire
+        // if (descriptionCours.isEmpty()) {
+        //     errorMessageLabel.setText("Veuillez saisir une description ou un sujet pour le cours."); return;
+        // }
+
 
         LocalTime heureDebut;
         LocalTime heureFin;
@@ -279,13 +262,6 @@ public class CreerCoursProfController {
             errorMessageLabel.setText("Format d'heure invalide (attendu HH:mm)."); return;
         }
 
-        int salleId;
-        try {
-            salleId = Integer.parseInt(salleIdStr);
-        } catch (NumberFormatException e) {
-            errorMessageLabel.setText("ID de salle invalide. Veuillez sélectionner une salle valide (numérique).");
-            return;
-        }
 
         int idCours = generateUniqueCoursId();
         if (idCours == -1) {
@@ -293,60 +269,87 @@ public class CreerCoursProfController {
             return;
         }
 
-        int enseignantId = enseignantConnecte.getIdUtilisateur();
+        int enseignantId = (enseignantConnecte != null) ? enseignantConnecte.getIdUtilisateur() : -1;
 
+        // ** L'ordre et le nombre de champs sont CRUCIAUX et DOIVENT correspondre à ENTETE_COURS_CSV **
+        // 1. idCours
+        // 2. matiere
+        // 3. codeMatiere (généré automatiquement)
+        // 4. description (saisie par l'utilisateur dans descriptionArea)
+        // 5. enseignantId
+        // 6. salleId
+        // 7. date
+        // 8. heureDebut
+        // 9. heureFin
+        // 10. classe
         String[] nouveauCoursLigne = new String[]{
                 String.valueOf(idCours),
                 matiere,
+                codeMatiere,        // <--- Généré automatiquement
+                descriptionCours,   // <--- Vient de descriptionArea
+                String.valueOf(enseignantId),
+                numeroSalleChoisi,
                 date.toString(),
                 heureDebutStr,
                 heureFinStr,
-                classe,
-                String.valueOf(salleId),
-                String.valueOf(enseignantId),
-                description
+                classe
         };
 
         try {
-            List<String[]> toutesLesLignes = CRUDcsvController.lire(CHEMIN_COURS);
-            boolean fileHadHeader = false;
+            List<String[]> toutesLesLignesActuelles = CRUDcsvControllerProf.lire(CHEMIN_COURS);
+            List<String[]> lignesAecrire = new ArrayList<>();
 
-            if (!toutesLesLignes.isEmpty() && toutesLesLignes.get(0).length > 0 && "idCours".equalsIgnoreCase(toutesLesLignes.get(0)[0].trim())) {
-                fileHadHeader = true;
+            boolean fichierExisteEtContientEntete = false;
+            if (!toutesLesLignesActuelles.isEmpty() && toutesLesLignesActuelles.get(0).length == ENTETE_COURS_CSV.length) {
+                boolean enteteCorrespond = true;
+                for (int i = 0; i < ENTETE_COURS_CSV.length; i++) {
+                    if (!toutesLesLignesActuelles.get(0)[i].trim().equalsIgnoreCase(ENTETE_COURS_CSV[i].trim())) {
+                        enteteCorrespond = false;
+                        break;
+                    }
+                }
+                if (enteteCorrespond) {
+                    fichierExisteEtContientEntete = true;
+                }
             }
 
-            List<String[]> lignesPourEcriture = new ArrayList<>();
-            if (!fileHadHeader) {
-                lignesPourEcriture.add(new String[]{"idCours", "matiere", "date", "heureDebut", "heureFin", "classe", "salleId", "enseignantId", "description"});
+            if (!fichierExisteEtContientEntete) {
+                lignesAecrire.add(ENTETE_COURS_CSV);
+                System.out.println("DEBUG (CreerCoursProfController): Ajout de l'en-tête standard au fichier CSV.");
+            } else {
+                lignesAecrire.add(toutesLesLignesActuelles.get(0)); // Garder l'en-tête existant
+                for (int i = 1; i < toutesLesLignesActuelles.size(); i++) {
+                    lignesAecrire.add(toutesLesLignesActuelles.get(i));
+                }
             }
 
-            for(int i = (fileHadHeader ? 1 : 0); i < toutesLesLignes.size(); i++) {
-                lignesPourEcriture.add(toutesLesLignes.get(i));
-            }
+            lignesAecrire.add(nouveauCoursLigne); // Ajoutez le nouveau cours
 
-            lignesPourEcriture.add(nouveauCoursLigne);
-
-            CRUDcsvController.ecrire(CHEMIN_COURS, lignesPourEcriture);
+            CRUDcsvControllerProf.ecrire(CHEMIN_COURS, lignesAecrire);
 
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Cours enregistré avec succès!");
-            annuler();
+            System.out.println("DEBUG (CreerCoursProfController): Cours enregistré. Fermeture de la fenêtre.");
+            closeCurrentWindow();
         } catch (IOException e) {
             errorMessageLabel.setText("Erreur lors de l'enregistrement du cours: " + e.getMessage());
-            System.err.println("Erreur enregistrement cours: " + e.getMessage());
+            System.err.println("ERREUR (CreerCoursProfController): Enregistrement cours: ");
             e.printStackTrace();
         }
     }
 
     private int generateUniqueCoursId() {
         try {
-            List<String[]> lignes = CRUDcsvController.lire(CHEMIN_COURS);
+            List<String[]> lignes = CRUDcsvControllerProf.lire(CHEMIN_COURS);
             int maxId = 0;
 
+            // Ignorer l'en-tête si présent lors de la recherche du maxId
+            int startIndex = 0;
             if (!lignes.isEmpty() && lignes.get(0).length > 0 && "idCours".equalsIgnoreCase(lignes.get(0)[0].trim())) {
-                lignes.remove(0);
+                startIndex = 1;
             }
 
-            for (String[] ligne : lignes) {
+            for (int i = startIndex; i < lignes.size(); i++) {
+                String[] ligne = lignes.get(i);
                 if (ligne.length > 0 && ligne[0] != null) {
                     try {
                         int id = Integer.parseInt(ligne[0].trim());
@@ -367,10 +370,18 @@ public class CreerCoursProfController {
 
     @FXML
     private void annuler() {
-        if (currentStage != null) {
-            currentStage.close();
+        System.out.println("DEBUG (CreerCoursProfController): Annulation. Fermeture de la fenêtre.");
+        closeCurrentWindow();
+    }
+
+    private void closeCurrentWindow() {
+        if (matiereComboBox != null && matiereComboBox.getScene() != null && matiereComboBox.getScene().getWindow() != null) {
+            ((Stage) matiereComboBox.getScene().getWindow()).close();
+        } else {
+            System.err.println("ERREUR (CreerCoursProfController): Impossible de trouver la Stage à fermer pour annuler/enregistrer.");
         }
     }
+
 
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);

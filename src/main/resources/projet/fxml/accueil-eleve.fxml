@@ -50,4 +50,4 @@
         <Button text="📤 Déconnexion" onAction="#deconnexion"
                 style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px;"/>
     </HBox>
-</VBox>L1
+</VBox>

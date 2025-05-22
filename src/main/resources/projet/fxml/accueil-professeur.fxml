@@ -7,50 +7,43 @@
 <VBox spacing="20" xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="projet.controleurs.professeur.AccueilProfController"
-      style="-fx-background-color: #f5f5f5;">
+      style="-fx-background-color: #e0e0e0;"
+      prefHeight="700.0" maxHeight="900.0"> <padding>
+    <Insets top="20" right="20" bottom="20" left="20"/>
+</padding>
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
-
-    <HBox spacing="20" alignment="CENTER">
-        <VBox alignment="CENTER" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 5;">
-            <Label fx:id="labelBienvenue" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
-            <Label fx:id="labelStats" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+    <HBox spacing="20" alignment="CENTER" style="-fx-background-color: #6a1b9a; -fx-padding: 15; -fx-background-radius: 8;">
+        <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+            <Label fx:id="labelBienvenue" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Label fx:id="labelStats" style="-fx-font-size: 16px; -fx-text-fill: #e0e0e0;"/>
         </VBox>
     </HBox>
 
-    <HBox alignment="CENTER" spacing="20" style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 5;">
+    <HBox alignment="CENTER" spacing="20" style="-fx-background-color: #d1c4e9; -fx-padding: 12; -fx-background-radius: 8;">
         <Button text="⬅️" onAction="#semainePrecedente"
-                style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px; -fx-min-width: 50px;"/>
-        <Label fx:id="labelSemaine" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                style="-fx-background-color: #6a1b9a; -fx-text-fill: white; -fx-font-size: 18px; -fx-min-width: 60px; -fx-min-height: 40px; -fx-background-radius: 5;"/>
+        <Label fx:id="labelSemaine" style="-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #333;"/>
         <Button text="➡️" onAction="#semaineSuivante"
-                style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px; -fx-min-width: 50px;"/>
+                style="-fx-background-color: #6a1b9a; -fx-text-fill: white; -fx-font-size: 18px; -fx-min-width: 60px; -fx-min-height: 40px; -fx-background-radius: 5;"/>
     </HBox>
 
-    <HBox spacing="10" alignment="CENTER">
-        <ComboBox fx:id="filtreClasse" promptText="Filtrer par classe"/>
-        <ComboBox fx:id="filtreMatiere" promptText="Filtrer par matière"/>
+    <HBox spacing="10" alignment="CENTER" style="-fx-background-color: #e8eaf6; -fx-padding: 10; -fx-background-radius: 8;">
+        <ComboBox fx:id="filtreClasse" promptText="Filtrer par classe" style="-fx-font-size: 14px; -fx-pref-width: 200;"/>
+        <ComboBox fx:id="filtreMatiere" promptText="Filtrer par matière" style="-fx-font-size: 14px; -fx-pref-width: 200;"/>
     </HBox>
 
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" prefHeight="400"> <content>
-        <GridPane fx:id="grilleEmploi" hgap="10" vgap="5"
-                  style="-fx-background-color: white; -fx-padding: 10;">
-            <columnConstraints>
-                <ColumnConstraints minWidth="80" prefWidth="80"/>
-                <ColumnConstraints minWidth="150" prefWidth="150" hgrow="ALWAYS"/>
-                <ColumnConstraints minWidth="150" prefWidth="150" hgrow="ALWAYS"/>
-                <ColumnConstraints minWidth="150" prefWidth="150" hgrow="ALWAYS"/>
-                <ColumnConstraints minWidth="150" prefWidth="150" hgrow="ALWAYS"/>
-                <ColumnConstraints minWidth="150" prefWidth="150" hgrow="ALWAYS"/>
-            </columnConstraints>
+    <ScrollPane fitToWidth="true" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 8;"
+                prefHeight="450.0" maxHeight="600.0"> <content>
+        <GridPane fx:id="grilleEmploi" hgap="5" vgap="5"
+                  style="-fx-background-color: white; -fx-padding: 10; -fx-border-radius: 8;">
         </GridPane>
     </content>
     </ScrollPane>
-    <HBox alignment="CENTER" spacing="15" style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 5;">
+
+    <HBox alignment="CENTER" spacing="20" style="-fx-background-color: #6a1b9a; -fx-padding: 15; -fx-background-radius: 8;">
         <Button text="📝 Ajouter Cours" onAction="#ajouterCours"
-                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"/>
+                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 25; -fx-background-radius: 5;"/>
         <Button text="📤 Déconnexion" onAction="#deconnexion"
-                style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px;"/>
+                style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10 25; -fx-background-radius: 5;"/>
     </HBox>
 </VBox>

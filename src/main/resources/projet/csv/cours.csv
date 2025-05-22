@@ -1,16 +1,5 @@
-idCours;nomMatiere;codeCours;description;idenseignant;idsalle;date;heureDebut;heureFin;classe
-1;Mathématiques;MATH101;Algèbre linéaire;12;101;2024-03-19;08:00;10:00;L1
-2;Mathématiques;MATH102;Analyse;12;101;2024-03-19;10:00;12:00;L2
-3;Physique;PHY101;Mécanique;12;102;2024-03-19;14:00;16:00;L1
-4;Mathématiques;MATH103;Géométrie;12;101;2024-03-20;08:00;10:00;L2
-5;Physique;PHY102;Électricité;12;102;2024-03-20;10:00;12:00;L1
-6;Mathématiques;MATH104;Probabilités;1;101;2024-03-21;08:00;10:00;L3
-7;Physique;PHY103;Optique;1;102;2024-03-21;14:00;16:00;L2
-8;Mathématiques;MATH105;Statistiques;1;101;2024-03-22;10:00;12:00;L3
-9;Physique;PHY104;Thermodynamique;1;102;2024-03-22;14:00;16:00;L1
-10;Mathématiques;MATH106;Analyse complexe;1;101;2024-03-22;08:00;10:00;L2
-999;Test;TEST101;Cours test;1;101;2024-03-19;08:00;10:00;L1
-1000;Informatique;INFO201;Programmation Java;12;103;2025-05-22;08:00;10:00;L1
-1001;Chimie;CHIM101;Chimie organique;2;12;2025-05-22;10:00;12:00;L2
-1002;Histoire;HIST101;Révolution française;12;105;2025-05-22;14:00;16:00;L1
-1003;Francais;FRT101;Révolution française;12;105;2025-05-22;08:00;10:00;L1
+idCours;matiere;codeMatiere;description;enseignantId;salleId;date;heureDebut;heureFin;classe
+1004;Mathématiques;MATH;;12;B201;2025-05-21;10:00;12:00;A2
+1005;Physique;PHYS;;12;B201;2025-05-13;08:00;10:00;A3
+1006;Mathématiques;MATH;;12;3454;2025-05-19;08:30;10:00;A2
+1007;Physique;PHYS;;12;C302;2025-05-20;08:00;09:00;P1
