@@ -108,7 +108,7 @@ public class CRUDcsvController {
                 String[] ligneAEcrire = ligne;
 
                 // Si le fichier est reconnu et que la ligne est plus courte que prévu, on la padde
-                if (expectedColumnCount > 0 && ligne.length < expectedColumnCount) {
+                if (expectedColumnCount > 0 && ligne.length < expectedColumnCount-1) {
                     ligneAEcrire = Arrays.copyOf(ligne, expectedColumnCount);
                     // Remplir les éléments nouvellement ajoutés (qui sont null par défaut) par des chaînes vides
                     for (int i = ligne.length; i < expectedColumnCount; i++) {
