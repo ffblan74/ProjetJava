@@ -7,6 +7,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import projet.models.Cours;
+import projet.models.Salle;
 
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
@@ -123,7 +124,7 @@ public class GrilleUtil {
         Label classe = new Label(cours.getClasse());
         classe.setStyle("-fx-text-fill: white;");
 
-        Label salle = new Label("Salle: " + cours.getSalle());
+        Label salle = new Label("Salle: " + cours.getNumeroSalle());
         salle.setStyle("-fx-text-fill: white; -fx-font-size: 11;");
 
         cellule.getChildren().addAll(matiere, classe, salle);

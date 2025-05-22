@@ -13,7 +13,7 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Button text="Déconnexion" onAction="#deconnexion" alignment="TOP_RIGHT"/>
+    <Button fx:id="buttonDeconnexion" onAction="#handleDeconnexion" text="Déconnexion"/>
 
     <HBox spacing="20" alignment="CENTER">
         <VBox alignment="CENTER" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 5;">

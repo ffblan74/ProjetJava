@@ -13,9 +13,8 @@ public class HeaderController implements Transmissible {
 
     @FXML private Label nomUtilisateurLabel;
     @FXML private Button btnGererUtilisateurs;
-    @FXML private Button btnGererCours;
     @FXML private Button btnGererSalles;
-    @FXML private Button btnGererEmploiDuTemps;
+    @FXML private Button buttonDeconnexion;
 
     private Utilisateur utilisateurConnecte; // Pour stocker l'utilisateur connecté
 
@@ -33,12 +32,11 @@ public class HeaderController implements Transmissible {
         }
     }
 
+
     @FXML
     private void handleDeconnexion(ActionEvent event) {
-        System.out.println("Déconnexion de l'utilisateur.");
-        Stage stageActuel = (Stage) ((Button) event.getSource()).getScene().getWindow();
-        // Utilise changerScene pour revenir à la connexion sur la même fenêtre
-        NavigationUtil.changerScene(stageActuel, "/projet/fxml/login.fxml", "Connexion", null);
+        // Appeler la méthode de déconnexion en passant le bouton
+        NavigationUtil.deconnexion(buttonDeconnexion);
     }
 
     @FXML

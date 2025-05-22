@@ -1,9 +1,13 @@
 package projet.models;
 
+import projet.controleurs.CRUDcsvController;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class Cours {
@@ -20,7 +24,7 @@ public class Cours {
 
     // Attributs pour l'affichage des informations enrichies
     private String enseignantNomComplet;
-    private String salle;
+    private Salle salle;
 
     // Constructeur
     public Cours(int idCours, String matiere, String codeCours, String description,
@@ -37,7 +41,6 @@ public class Cours {
         this.heureFin = heureFin;
         this.classe = classe;
         this.enseignantNomComplet = "";
-        this.salle = "";
     }
 
     // --- Getters ---
@@ -52,7 +55,25 @@ public class Cours {
     public String getHeureFin() { return String.valueOf(heureFin); }
     public String getClasse() { return classe; }
     public String getEnseignantNomComplet() { return enseignantNomComplet; }
-    public String getSalle() { return salle; }
+    public String getNumeroSalle() {
+
+        String cheminFichier = "src/main/resources/projet/csv/salle.csv";
+
+        String numeroSalle = null;
+        try {
+            List<String[]> resultats = CRUDcsvController.rechercher(cheminFichier, 0, String.valueOf(salleId));
+
+            if (!resultats.isEmpty()) {
+                String[] data = resultats.get(0); // Suppose qu'il y a seulement une correspondance
+                numeroSalle = data[1].trim();
+            } else {
+                System.err.println("Aucune salle trouvée avec l'ID :" + String.valueOf(salleId));
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur lors de la lecture du fichier salle.csv : " + e.getMessage());
+        }
+        return numeroSalle;
+    }
 
     // Méthode utilitaire pour obtenir le jour de la semaine en français (ex: "lundi")
     public String getJourSemaineFrancais() {
@@ -71,7 +92,10 @@ public class Cours {
     public void setHeureFin(LocalTime heureFin) { this.heureFin = heureFin; }
     public void setClasse(String classe) { this.classe = classe; }
     public void setEnseignantNomComplet(String enseignantNomComplet) { this.enseignantNomComplet = enseignantNomComplet; }
-    public void setSalle(String salle) { this.salle = salle; }
+    public void setSalle(Salle salle) { this.salle = salle; }
+
+
+
 
     /**
      * Crée un objet Cours à partir d'un tableau de String représentant une ligne CSV.

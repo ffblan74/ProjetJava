@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
@@ -108,12 +109,11 @@ public class NavigationUtil {
         return alerte.showAndWait().orElse(null) == ButtonType.OK;
     }
 
-    public static void afficherSucces(String title, String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION); // Ou AlertType.CONFIRMATION selon le besoin
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
+    public static void deconnexion(Button button) {
+        System.out.println("Déconnexion de l'utilisateur.");
+        Stage stageActuel = (Stage) button.getScene().getWindow();
+        // Ici, vous pouvez ajouter la logique pour changer de scène ou faire des opérations de nettoyage
+        changerScene(stageActuel, "/projet/fxml/login.fxml", "Connexion", null);
     }
 
     public static boolean demanderConfirmation(String titre, String message) {

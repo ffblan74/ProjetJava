@@ -27,6 +27,7 @@ public class AccueilProfController {
     @FXML private Label labelStats;
     @FXML private GridPane grilleEmploi;
     @FXML private Label labelDate;
+    @FXML private Button buttonDeconnexion;
 
     private LocalDate dateActuelle;
     private Utilisateur utilisateurConnecte;
@@ -40,11 +41,13 @@ public class AccueilProfController {
 
         if (Utilisateur.getUtilisateurConnecte() instanceof Utilisateur) {
             this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
+            setEnseignant(utilisateurConnecte);
+            afficherSemaine();
+            chargerCours();
+            afficherStats();
         }
 
-        setEnseignant(utilisateurConnecte);
-        afficherSemaine();
-        chargerCours();
+
     }
 
     public void setEnseignant(Utilisateur enseignant) {
@@ -98,6 +101,7 @@ public class AccueilProfController {
     @FXML
     private void semainePrecedente() {
         dateActuelle = dateActuelle.minusWeeks(1);
+        afficherStats();
         afficherSemaine();
         chargerCours();
     }
@@ -105,19 +109,21 @@ public class AccueilProfController {
     @FXML
     private void semaineSuivante() {
         dateActuelle = dateActuelle.plusWeeks(1);
+        afficherStats();
         afficherSemaine();
         chargerCours();
     }
 
     @FXML
-    private void ajouterCours() {
-        System.out.println("Ajouter cours (non implémenté)");
+    private void ajouterCours(ActionEvent event) {
+        System.out.println("Ajouter cours");
+        Stage stageActuel = (Stage) ((Button) event.getSource()).getScene().getWindow();
+        NavigationUtil.changerScene(stageActuel, "/projet/fxml/creer-cours.fxml", "Créer Cours", null);
     }
 
     @FXML
-    private void deconnexion(ActionEvent event) {
-        System.out.println("Déconnexion de l'utilisateur.");
-        Stage stageActuel = (Stage) ((Button) event.getSource()).getScene().getWindow();
-        NavigationUtil.changerScene(stageActuel, "/projet/fxml/login.fxml", "Connexion", null);
+    private void handleDeconnexion(ActionEvent event) {
+        // Appeler la méthode de déconnexion en passant le bouton
+        NavigationUtil.deconnexion(buttonDeconnexion);
     }
 }

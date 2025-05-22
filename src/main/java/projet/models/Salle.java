@@ -1,5 +1,8 @@
 package projet.models;
 
+import projet.controleurs.CRUDcsvController;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +15,7 @@ public class Salle {
     private String localisation;
     private List<String> materielNom;
     private List<String> materielsDescription;
+
 
     public Salle(int idSalle, String numeroSalle, int capacite, String localisation, List<String> materielNom, List<String> materielsDescription) {
         this.idSalle = idSalle;
@@ -59,6 +63,7 @@ public class Salle {
     public void setMaterielsDescription(List<String> materielsDescription) {
         this.materielsDescription = materielsDescription;
     }
+
 
     // Méthode pour obtenir une chaîne affichable de tous les noms de matériels (pour l'affichage en tableau par exemple)
     public String getMaterielsNomsAffichables() {
