@@ -13,4 +13,3 @@ idCours;nomMatiere;codeCours;description;idenseignant;idsalle;date;heureDebut;he
 1000;Informatique;INFO201;Programmation Java;12;103;2025-05-22;08:00;10:00;L1
 1001;Chimie;CHIM101;Chimie organique;2;12;2025-05-22;10:00;12:00;L2
 1002;Histoire;HIST101;Révolution française;12;105;2025-05-22;14:00;16:00;L1
-1003;Francais;FRT101;Révolution française;12;105;2025-05-22;08:00;10:00;L1

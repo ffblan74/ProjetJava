@@ -21,7 +21,6 @@ public class HeaderController implements Transmissible {
 
     @FXML
     public void initialize() {
-        // Initialisation si nécessaire
     }
 
     @Override
@@ -29,8 +28,6 @@ public class HeaderController implements Transmissible {
         if (data instanceof Utilisateur) {
             this.utilisateurConnecte = (Utilisateur) data;
             if (nomUtilisateurLabel != null) {
-                // CORRECTION ICI : Changement de getUtilisateurConnecte() en getNomUtilisateur()
-                // Ceci suppose que ta classe Utilisateur a bien une méthode getNomUtilisateur()
                 nomUtilisateurLabel.setText("Bonjour, " + utilisateurConnecte.getUtilisateurConnecte());
             }
         }
@@ -52,13 +49,6 @@ public class HeaderController implements Transmissible {
         NavigationUtil.changerScene(stageActuel, "/projet/fxml/accueil-admin-gerer-utilisateur.fxml", "Gestion des Utilisateurs", utilisateurConnecte);
     }
 
-    @FXML
-    private void handleGererCours(ActionEvent event) {
-        System.out.println("Naviguer vers la gestion des cours.");
-        Stage stageActuel = (Stage) ((Button) event.getSource()).getScene().getWindow();
-        // Utilise changerScene pour changer la scène sur la même fenêtre
-        NavigationUtil.changerScene(stageActuel, "/projet/fxml/accueil-admin-gerer-cours.fxml", "Gestion des Cours", utilisateurConnecte);
-    }
 
     @FXML
     private void handleGererSalles(ActionEvent event) {
@@ -68,11 +58,4 @@ public class HeaderController implements Transmissible {
         NavigationUtil.changerScene(stageActuel, "/projet/fxml/accueil-admin-gerer-salles.fxml", "Gestion des Salles", utilisateurConnecte);
     }
 
-    @FXML
-    private void handleGererEmploiDuTemps(ActionEvent event) {
-        System.out.println("Naviguer vers la gestion de l'emploi du temps.");
-        Stage stageActuel = (Stage) ((Button) event.getSource()).getScene().getWindow();
-        // Utilise changerScene pour changer la scène sur la même fenêtre
-        NavigationUtil.changerScene(stageActuel, "/projet/fxml/accueil-admin-gerer-emploi-du-temps.fxml", "Gestion Emploi du Temps", utilisateurConnecte);
-    }
 }

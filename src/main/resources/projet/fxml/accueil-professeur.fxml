@@ -13,6 +13,8 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
+    <Button text="Déconnexion" onAction="#deconnexion" alignment="TOP_RIGHT"/>
+
     <HBox spacing="20" alignment="CENTER">
         <VBox alignment="CENTER" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 5;">
             <Label fx:id="labelBienvenue" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
@@ -21,16 +23,15 @@
     </HBox>
 
     <HBox alignment="CENTER" spacing="20" style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 5;">
-        <Button text="⬅️" onAction="#semainePrecedente"
+        <Button text="Précédent" onAction="#semainePrecedente"
                 style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px; -fx-min-width: 50px;"/>
-        <Label fx:id="labelSemaine" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-        <Button text="➡️" onAction="#semaineSuivante"
-                style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px; -fx-min-width: 50px;"/>
-    </HBox>
 
-    <HBox spacing="10" alignment="CENTER">
-        <ComboBox fx:id="filtreClasse" promptText="Filtrer par classe"/>
-        <ComboBox fx:id="filtreMatiere" promptText="Filtrer par matière"/>
+        <Label fx:id="labelDate" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Date courante" /> <!-- Ajouter un Label pour afficher la date -->
+
+        <Label fx:id="labelSemaine" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+
+        <Button text="Suivant" onAction="#semaineSuivante"
+                style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 16px; -fx-min-width: 50px;"/>
     </HBox>
 
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
@@ -48,9 +49,7 @@
     </ScrollPane>
 
     <HBox alignment="CENTER" spacing="15" style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 5;">
-        <Button text="📝 Ajouter Cours" onAction="#ajouterCours"
+        <Button text="Ajouter Cours" onAction="#ajouterCours"
                 style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"/>
-        <Button text="📤 Déconnexion" onAction="#deconnexion"
-                style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px;"/>
     </HBox>
 </VBox>

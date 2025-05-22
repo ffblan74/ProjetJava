@@ -49,10 +49,8 @@ public class LoginController {
 
             for (String[] ligne : lignes) {
                 if (ligne[4].equals(password)) { // Vérification du mot de passe
-                    System.out.println("fdklsmfj"+"  "+ligne[4]+"  "+password);
                     // Convertir la ligne CSV en une instance de sous-classe appropriée
                     Utilisateur utilisateur = convertirDepuisCSV(ligne);
-                    System.out.println("utilisateur : " + utilisateur.getNom() + " " + utilisateur.getPrenom());
 
                     // Définir l'utilisateur comme connecté
                     Utilisateur.connecter(utilisateur);
