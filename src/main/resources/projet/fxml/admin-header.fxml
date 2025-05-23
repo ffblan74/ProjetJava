@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
@@ -8,42 +8,44 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
+
+
 
 <VBox alignment="TOP_CENTER" prefWidth="900.0" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projet.controleurs.admin.HeaderController">
+
     <children>
-        <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="860.0" spacing="10.0">
+        <HBox alignment="TOP_LEFT" prefHeight="100.0" prefWidth="860.0" spacing="10.0">
             <children>
-                <Label fx:id="nomUtilisateurLabel" text="Bonjour" textFill="BLACK">
-                    <font>
-                        <Font name="System Bold" size="18.0" />
-                    </font>
-                </Label>
+                <ImageView fx:id="imageView" fitWidth="100" fitHeight="100"
+                           preserveRatio="true" pickOnBounds="true"/>
+
+                <VBox spacing="5">
+
+                    <Button onAction="#handleDeconnexion" text="Déconnexion" style="-fx-background-color: lightgreen;" />
+                </VBox>
+
                 <Region HBox.hgrow="ALWAYS" />
-                <Button onAction="#handleDeconnexion" text="Déconnexion" />
             </children>
         </HBox>
-        <Label text="Panneau d'Administration" textFill="#e4b01e">
+
+        <Label text="Panneau d'Administration" style="-fx-background-color: purple; -fx-text-fill: white;">
             <font>
                 <Font name="System Bold" size="24.0" />
             </font>
         </Label>
         <HBox alignment="CENTER" prefHeight="50.0" prefWidth="860.0" spacing="20.0">
-            <Button fx:id="btnGererUtilisateurs" onAction="#handleGererUtilisateurs" prefHeight="40.0" prefWidth="200.0" text="Gérer les Utilisateurs" styleClass="action-button">
+            <Button fx:id="btnGererUtilisateurs" onAction="#handleGererUtilisateurs" prefHeight="40.0" prefWidth="200.0" text="Gérer les Utilisateurs" styleClass="action-button" style="-fx-background-color: lightgreen;">
                 <font>
                     <Font size="14.0" />
                 </font>
             </Button>
-            <Button fx:id="btnGererCours" onAction="#handleGererCours" prefHeight="40.0" prefWidth="200.0" text="Gérer les Cours" styleClass="action-button">
+            <Button fx:id="btnGererSalles" onAction="#handleGererSalles" prefHeight="40.0" prefWidth="200.0" text="Gérer les Salles" styleClass="action-button" style="-fx-background-color: lightgreen;">
                 <font>
                     <Font size="14.0" />
                 </font>
             </Button>
-            <Button fx:id="btnGererSalles" onAction="#handleGererSalles" prefHeight="40.0" prefWidth="200.0" text="Gérer les Salles" styleClass="action-button">
-                <font>
-                    <Font size="14.0" />
-                </font>
-            </Button>
-            <Button fx:id="btnGererEmploiDuTemps" onAction="#handleGererEmploiDuTemps" prefHeight="40.0" prefWidth="200.0" text="Gérer Emploi du Temps" styleClass="action-button">
+            <Button fx:id="btnGererEmploiDuTemps" onAction="#handleGererEmploiDuTemps" prefHeight="40.0" prefWidth="200.0" text="Gérer Emploi du Temps" styleClass="action-button" style="-fx-background-color: lightgreen;">
                 <font>
                     <Font size="14.0" />
                 </font>

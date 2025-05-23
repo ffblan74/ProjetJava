@@ -1,16 +1,62 @@
-idCours;nomMatiere;codeCours;description;idenseignant;idsalle;date;heureDebut;heureFin;classe
-1;Mathématiques;MATH101;Algèbre linéaire;12;101;2024-03-19;08:00;10:00;L1
-2;Mathématiques;MATH102;Analyse;12;101;2024-03-19;10:00;12:00;L2
-3;Physique;PHY101;Mécanique;12;102;2024-03-19;14:00;16:00;L1
-4;Mathématiques;MATH103;Géométrie;12;101;2024-03-20;08:00;10:00;L2
-5;Physique;PHY102;Électricité;12;102;2024-03-20;10:00;12:00;L1
-6;Mathématiques;MATH104;Probabilités;1;101;2024-03-21;08:00;10:00;L3
-7;Physique;PHY103;Optique;1;102;2024-03-21;14:00;16:00;L2
-8;Mathématiques;MATH105;Statistiques;1;101;2024-03-22;10:00;12:00;L3
-9;Physique;PHY104;Thermodynamique;1;102;2024-03-22;14:00;16:00;L1
-10;Mathématiques;MATH106;Analyse complexe;1;101;2024-03-22;08:00;10:00;L2
-999;Test;TEST101;Cours test;1;101;2024-03-19;08:00;10:00;L1
-1000;Informatique;INFO201;Programmation Java;12;103;2025-05-22;08:00;10:00;L1
-1001;Chimie;CHIM101;Chimie organique;2;12;2025-05-22;10:00;12:00;L2
-1002;Histoire;HIST101;Révolution française;12;105;2025-05-22;14:00;16:00;L1
-1003;Francais;FRT101;Révolution française;12;105;2025-05-22;08:00;10:00;L1
+idCours;matiere;codeMatiere;description;enseignantId;salleId;date;heureDebut;heureFin;classe
+1001;Mathématiques;MATH101;Algèbre linéaire;2;1;2025-05-19;09:00;10:30;A1
+1002;Cybersécurité;CYB201;Introduction à la sécurité des réseaux;2;2;2025-05-19;11:00;12:30;A2
+1003;Anglais;ANG101;Business English;3;3;2025-05-19;14:00;15:30;A3
+1004;Développement Logiciel;DEV301;Programmation orientée objet;3;4;2025-05-19;16:00;17:30;P1
+1005;Algorithmique;ALGO201;Structures de données;4;5;2025-05-19;09:00;10:30;P2
+1006;Intelligence Artificielle;IA301;Machine Learning - Bases;4;6;2025-05-19;11:00;12:30;A1
+1007;Traitement du Signal;TSG101;Analyse des signaux;5;7;2025-05-19;14:00;15:30;A2
+1008;Électronique;ELEC201;Circuits numériques;5;8;2025-05-19;16:00;17:30;A3
+1009;Réseaux;RES101;Introduction aux protocoles réseau;6;1;2025-05-20;09:00;10:30;P1
+1010;Base de Données;BDD201;SQL Avancé;6;2;2025-05-20;11:00;12:30;P2
+1011;Mathématiques;MATH102;Calcul différentiel;2;3;2025-05-20;14:00;15:30;A1
+1012;Cybersécurité;CYB202;Cryptographie;2;4;2025-05-20;16:00;17:30;A2
+1013;Anglais;ANG102;Préparation TOEIC;3;5;2025-05-20;09:00;10:30;A3
+1014;Développement Logiciel;DEV302;Design Patterns;3;6;2025-05-20;11:00;12:30;P1
+1015;Algorithmique;ALGO202;Complexité des algorithmes;4;7;2025-05-20;14:00;15:30;P2
+1016;Intelligence Artificielle;IA302;Réseaux de neurones;4;8;2025-05-20;16:00;17:30;A1
+1017;Traitement du Signal;TSG102;Filtrage numérique;5;1;2025-05-21;09:00;10:30;A2
+1018;Électronique;ELEC202;Microcontrôleurs;5;2;2025-05-21;11:00;12:30;A3
+1019;Réseaux;RES102;Sécurité réseau;6;3;2025-05-21;14:00;15:30;P1
+1020;Base de Données;BDD202;Modélisation de données;6;4;2025-05-21;16:00;17:30;P2
+1021;Mathématiques;MATH103;Probabilités;2;5;2025-05-21;09:00;10:30;A1
+1022;Cybersécurité;CYB203;Forensic numérique;2;6;2025-05-21;11:00;12:30;A2
+1023;Anglais;ANG103;Communication interculturelle;3;7;2025-05-21;14:00;15:30;A3
+1024;Développement Logiciel;DEV303;Développement web (Front-end);3;8;2025-05-21;16:00;17:30;P1
+1025;Algorithmique;ALGO203;Graphes;4;1;2025-05-22;09:00;10:30;P2
+1026;Intelligence Artificielle;IA303;Traitement du langage naturel;4;2;2025-05-22;11:00;12:30;A1
+1027;Traitement du Signal;TSG103;Compression de données;5;3;2025-05-22;14:00;15:30;A2
+1028;Électronique;ELEC203;Capteurs et actionneurs;5;4;2025-05-22;16:00;17:30;A3
+1029;Réseaux;RES103;Administration Linux;6;5;2025-05-22;09:00;10:30;P1
+1030;Base de Données;BDD203;NoSQL;6;6;2025-05-22;11:00;12:30;P2
+1031;Mathématiques;MATH104;Statistiques inférentielles;2;7;2025-05-22;14:00;15:30;A1
+1032;Cybersécurité;CYB204;Tests d'intrusion;2;8;2025-05-22;16:00;17:30;A2
+1033;Anglais;ANG104;Rédaction technique;3;1;2025-05-23;09:00;10:30;A3
+1034;Développement Logiciel;DEV304;Développement web (Back-end);3;2;2025-05-23;11:00;12:30;P1
+1035;Algorithmique;ALGO204;Optimisation combinatoire;4;3;2025-05-23;14:00;15:30;P2
+1036;Intelligence Artificielle;IA304;Vision par ordinateur;4;4;2025-05-23;16:00;17:30;A1
+1037;Traitement du Signal;TSG104;Reconnaissance de formes;5;5;2025-05-23;09:00;10:30;A2
+1038;Électronique;ELEC204;Traitement du signal numérique;5;6;2025-05-23;11:00;12:30;A3
+1039;Réseaux;RES104;Virtualisation et Cloud;6;7;2025-05-23;14:00;15:30;P1
+1040;Base de Données;BDD204;Big Data et Hadoop;6;8;2025-05-23;16:00;17:30;P2
+1041;Mathématiques;MATH105;Modélisation mathématique;2;1;2025-05-24;09:00;10:30;A1
+1042;Cybersécurité;CYB205;Sécurité des applications mobiles;2;2;2025-05-24;11:00;12:30;A2
+1043;Anglais;ANG105;Anglais pour la recherche;3;3;2025-05-24;14:00;15:30;A3
+1044;Développement Logiciel;DEV305;Méthodes agiles;3;4;2025-05-24;16:00;17:30;P1
+1045;Algorithmique;ALGO205;Programmation dynamique;4;5;2025-05-24;09:00;10:30;P2
+1046;Intelligence Artificielle;IA305;Apprentissage profond;4;6;2025-05-24;11:00;12:30;A1
+1047;Traitement du Signal;TSG105;Traitement d'images;5;7;2025-05-24;14:00;15:30;A2
+1048;Électronique;ELEC205;Robotique;5;8;2025-05-24;16:00;17:30;A3
+1049;Réseaux;RES105;Administration de serveurs web;6;1;2025-05-25;09:00;10:30;P1
+1050;Base de Données;BDD205;Data Warehousing;6;2;2025-05-25;11:00;12:30;P2
+1051;Mathématiques;MATH106;Optimisation;2;3;2025-05-25;14:00;15:30;A1
+1052;Cybersécurité;CYB206;Sécurité des systèmes embarqués;2;4;2025-05-25;16:00;17:30;A2
+1053;Anglais;ANG106;Anglais des affaires;3;5;2025-05-25;09:00;10:30;A3
+1054;Développement Logiciel;DEV306;Tests logiciels;3;6;2025-05-25;11:00;12:30;P1
+1055;Algorithmique;ALGO206;Géométrie algorithmique;4;7;2025-05-25;14:00;15:30;P2
+1056;Intelligence Artificielle;IA306;Systèmes experts;4;8;2025-05-25;16:00;17:30;A1
+1057;Traitement du Signal;TSG106;Traitement audio;5;1;2025-05-25;09:00;10:30;A2
+1058;Électronique;ELEC206;Conception de circuits;5;2;2025-05-25;11:00;12:30;A3
+1059;Réseaux;RES106;Protocoles avancés;6;3;2025-05-25;14:00;15:30;P1
+1060;Base de Données;BDD206;Gestion de données distribuées;6;4;2025-05-25;16:00;17:30;P2
+1061;Anglais;ANG-20250522-1061;;6;B202;2025-05-22;08:00;09:00;A2
