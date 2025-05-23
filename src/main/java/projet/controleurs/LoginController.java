@@ -139,6 +139,4 @@ public class LoginController {
                 throw new IllegalArgumentException("Rôle inconnu : " + role);
         }
     }
-
-
 }

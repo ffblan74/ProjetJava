@@ -12,25 +12,29 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.geometry.Insets;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.paint.Color; // Import pour les couleurs
+import javafx.scene.paint.Color;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 import projet.models.Utilisateur;
 import projet.utils.NavigationUtil;
 import projet.models.Cours;
-import projet.controleurs.CRUDcsvController; // Assurez-vous que c'est le bon contrôleur CRUD (pour lire)
+import projet.controleurs.CRUDcsvControllerProf;
+import projet.controleurs.CRUDNotification;
 
-import java.time.DayOfWeek; // Pour obtenir le jour de la semaine
+import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter; // Pour formater les dates
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.io.IOException;
-import java.util.Optional; // Pour Optional<Color>
-import java.util.HashMap; // Pour stocker les couleurs des matières
-import java.util.Map; // Pour Map
+import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AccueilProfController {
 
@@ -40,9 +44,10 @@ public class AccueilProfController {
     @FXML private GridPane grilleEmploi;
     @FXML private ComboBox<String> filtreClasse;
     @FXML private ComboBox<String> filtreMatiere;
+    @FXML private Button supprimerCoursButton;
 
     private LocalDate dateActuelle;
-    private LocalDate premierJourSemaineActuelle; // Pour stocker le lundi de la semaine affichée
+    private LocalDate premierJourSemaineActuelle;
 
     private final String[] JOURS = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"};
     private final String[] HEURES_30MIN = {
@@ -55,34 +60,42 @@ public class AccueilProfController {
     };
 
     private static final String CHEMIN_COURS = "src/main/resources/projet/csv/cours.csv";
+    private static final String CHEMIN_UTILISATEURS = "src/main/resources/projet/csv/utilisateurs.csv";
+    private static final String CHEMIN_NOTIFICATIONS = "src/main/resources/projet/csv/notifications.csv";
+
     private Utilisateur utilisateurConnecte;
     private List<Cours> listeCours;
 
-    private Map<String, String> matiereColors = new HashMap<>(); // Pour stocker les couleurs des matières
+    private Map<String, String> matiereColors = new HashMap<>();
+
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+    private Cours coursSelectionne;
 
     @FXML
     public void initialize() {
         dateActuelle = LocalDate.now();
-        // S'assurer que dateActuelle est le lundi de la semaine courante
         premierJourSemaineActuelle = dateActuelle.with(DayOfWeek.MONDAY);
 
         if (Utilisateur.getUtilisateurConnecte() != null) {
             this.utilisateurConnecte = Utilisateur.getUtilisateurConnecte();
         }
-        setEnseignant(utilisateurConnecte); // Cette méthode appelle déjà chargerCours() et actualiserCours()
+        setEnseignant(utilisateurConnecte);
 
-        // Définir les couleurs pour certaines matières
-        matiereColors.put("Mathématiques", "#7F00FF"); // Violet
-        matiereColors.put("Physique", "#4CAF50");    // Vert
-        matiereColors.put("Informatique", "#FF5733"); // Orange
-        matiereColors.put("Chimie", "#33B5E5"); // Bleu clair
-        matiereColors.put("Histoire", "#E91E63"); // Rose foncé
-        matiereColors.put("Français", "#00BCD4"); // Cyan
-        // Ajoutez d'autres matières et leurs couleurs si nécessaire
+        matiereColors.put("Mathématiques", "#9400D3");
+        matiereColors.put("Physique", "#95C6B2");
+        matiereColors.put("Informatique", "#9400D3");
+        matiereColors.put("Chimie", "#95C6B2");
+        matiereColors.put("Histoire", "#9400D3");
+        matiereColors.put("Français", "#95C6B2");
 
-        initialiserGrille(); // Appelé une fois pour la structure de base
-        afficherSemaine();   // Met à jour le label de la semaine
-        actualiserCours();   // Remplit la grille avec les cours
+        initialiserGrille();
+        afficherSemaine();
+        actualiserCours();
+
+        if (supprimerCoursButton != null) {
+            supprimerCoursButton.setDisable(true);
+        }
     }
 
     public void setEnseignant(Utilisateur enseignant) {
@@ -94,34 +107,32 @@ public class AccueilProfController {
     private void chargerCours() {
         try {
             listeCours = new ArrayList<>();
-            List<String[]> lignes = CRUDcsvController.lire(CHEMIN_COURS);
-            if (!lignes.isEmpty() && lignes.get(0)[0].equalsIgnoreCase("idCours")) {
-                lignes.remove(0); // Supprimer l'en-tête
+            List<String[]> lignes = CRUDcsvControllerProf.lire(CHEMIN_COURS);
+            // Enlève la première ligne si c'est un en-tête
+            if (!lignes.isEmpty() && lignes.get(0).length > 0 && lignes.get(0)[0].equalsIgnoreCase("idCours")) {
+                lignes.remove(0);
             }
 
             for (String[] ligne : lignes) {
                 try {
                     Cours cours = Cours.fromCsv(ligne);
-                    // Filtrer les cours par l'enseignant connecté
+                    // N'ajoute que les cours du prof actuel
                     if (utilisateurConnecte != null && cours.getEnseignantId() == utilisateurConnecte.getIdUtilisateur()) {
                         listeCours.add(cours);
                     }
                 } catch (Exception e) {
-                    System.err.println("Erreur parsing cours (AccueilProfController): " + e.getMessage() + " Ligne: " + String.join(";", ligne));
-                    // Considérez d'afficher une alerte si c'est une erreur critique, ou de loguer.
+                    System.err.println("Erreur de traitement d'un cours: " + e.getMessage() + " Ligne: " + String.join(";", ligne));
                 }
             }
 
             initialiserFiltres();
-            // actualiserCours() est appelé après le chargement pour initialiser l'affichage
         } catch (IOException e) {
-            System.err.println("Erreur lecture fichier cours (AccueilProfController): " + e.getMessage());
-            // Afficher une alerte ou un message d'erreur à l'utilisateur si le fichier est introuvable
+            System.err.println("Erreur de lecture de fichier: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur de lecture", "Impossible de charger les cours : " + e.getMessage());
         }
     }
 
     private void initialiserFiltres() {
-        // Clear previous items to avoid duplicates on re-initialization
         filtreClasse.getItems().clear();
         filtreMatiere.getItems().clear();
 
@@ -137,18 +148,15 @@ public class AccueilProfController {
             }
         }
 
-        // Ajouter une option "Tous" aux filtres
         filtreClasse.getItems().add(0, "Toutes les classes");
         filtreMatiere.getItems().add(0, "Toutes les matières");
 
         filtreClasse.getItems().addAll(classes);
         filtreMatiere.getItems().addAll(matieres);
 
-        // Sélectionner "Tous" par défaut
         filtreClasse.getSelectionModel().selectFirst();
         filtreMatiere.getSelectionModel().selectFirst();
 
-        // Les handlers sont initialisés ici pour éviter de les ajouter plusieurs fois
         filtreClasse.setOnAction(e -> actualiserCours());
         filtreMatiere.setOnAction(e -> actualiserCours());
     }
@@ -158,14 +166,17 @@ public class AccueilProfController {
         grilleEmploi.getColumnConstraints().clear();
         grilleEmploi.getRowConstraints().clear();
 
-        // Colonne pour les horaires (index 0)
+        coursSelectionne = null;
+        if (supprimerCoursButton != null) {
+            supprimerCoursButton.setDisable(true);
+        }
+
         ColumnConstraints cc0 = new ColumnConstraints();
         cc0.setMinWidth(80);
         cc0.setPrefWidth(80);
-        cc0.setHgrow(javafx.scene.layout.Priority.NEVER); // Ne pas étirer
+        cc0.setHgrow(javafx.scene.layout.Priority.NEVER);
         grilleEmploi.getColumnConstraints().add(cc0);
 
-        // Colonnes pour les jours (index 1 à 5)
         for (int i = 0; i < JOURS.length; i++) {
             ColumnConstraints cc = new ColumnConstraints();
             cc.setMinWidth(150);
@@ -174,22 +185,20 @@ public class AccueilProfController {
             grilleEmploi.getColumnConstraints().add(cc);
         }
 
-        // Cellule "Horaires"
         Label horairesLabel = new Label("Horaires");
-        horairesLabel.setStyle("-fx-font-weight: bold; -fx-padding: 5; -fx-background-color: #6a1b9a; -fx-text-fill: white;"); // Violet
+        horairesLabel.setStyle("-fx-font-weight: bold; -fx-padding: 5; -fx-background-color: #9400D3; -fx-text-fill: white;");
         horairesLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         horairesLabel.setAlignment(javafx.geometry.Pos.CENTER);
         grilleEmploi.add(horairesLabel, 0, 0);
 
 
-        // En-têtes de jour (Lundi, Mardi, ...) avec les dates
         LocalDate dateDuJour = premierJourSemaineActuelle;
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM"); // Format pour les dates
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM");
 
         for (int j = 0; j < JOURS.length; j++) {
-            VBox dayHeader = new VBox(2); // VBox pour le jour et la date
+            VBox dayHeader = new VBox(2);
             dayHeader.setAlignment(javafx.geometry.Pos.CENTER);
-            dayHeader.setStyle("-fx-background-color: #6a1b9a; -fx-padding: 5; -fx-background-radius: 5;"); // Violet
+            dayHeader.setStyle("-fx-background-color: #9400D3; -fx-padding: 5; -fx-background-radius: 5;");
 
             Label jourLabel = new Label(JOURS[j]);
             jourLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: white;");
@@ -201,20 +210,17 @@ public class AccueilProfController {
 
             dayHeader.getChildren().addAll(jourLabel, dateLabel);
             grilleEmploi.add(dayHeader, j + 1, 0);
-            dateDuJour = dateDuJour.plusDays(1); // Passer au jour suivant
+            dateDuJour = dateDuJour.plusDays(1);
         }
 
-        // Lignes pour les horaires et les cellules vides
-        // La première ligne (index 0) est pour les en-têtes de jour/horaires.
-        // Les lignes suivantes (i + 1) sont pour les heures.
         for (int i = 0; i < HEURES_30MIN.length; i++) {
             RowConstraints rc = new RowConstraints();
-            rc.setMinHeight(40); // Augmenter la hauteur pour un meilleur visuel
+            rc.setMinHeight(40);
             rc.setPrefHeight(40);
             grilleEmploi.getRowConstraints().add(rc);
 
             Label heureLabel = new Label(HEURES_30MIN[i]);
-            heureLabel.setStyle("-fx-font-weight: bold; -fx-padding: 5; -fx-background-color: #6a1b9a; -fx-text-fill: white;"); // Violet
+            heureLabel.setStyle("-fx-font-weight: bold; -fx-padding: 5; -fx-background-color: #9400D3; -fx-text-fill: white;");
             heureLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             heureLabel.setAlignment(javafx.geometry.Pos.CENTER);
             grilleEmploi.add(heureLabel, 0, i + 1);
@@ -227,8 +233,6 @@ public class AccueilProfController {
     }
 
     private void actualiserCours() {
-        // Important: Recréer la grille à chaque fois pour effacer les anciens cours
-        // et mettre à jour les dates des jours.
         initialiserGrille();
 
         if (listeCours != null) {
@@ -239,7 +243,6 @@ public class AccueilProfController {
                 try {
                     LocalDate dateCours = cours.getDate();
 
-                    // Filtrage
                     boolean matchClasse = (selectedClasse == null || selectedClasse.equals("Toutes les classes") || selectedClasse.equals(cours.getClasse()));
                     boolean matchMatiere = (selectedMatiere == null || selectedMatiere.equals("Toutes les matières") || selectedMatiere.equals(cours.getMatiere()));
 
@@ -247,7 +250,7 @@ public class AccueilProfController {
                         ajouterCoursALaGrille(cours);
                     }
                 } catch (Exception e) {
-                    System.err.println("Erreur lors de l'ajout d'un cours à la grille (vérifier la date/heure ou l'ordre CSV): " + e.getMessage() + " Cours: " + cours.getMatiere() + " - " + cours.getDate());
+                    System.err.println("Erreur d'ajout de cours à la grille: " + e.getMessage() + " Cours: " + cours.getMatiere() + " - " + cours.getDate());
                 }
             }
         }
@@ -257,54 +260,65 @@ public class AccueilProfController {
 
     private void ajouterCoursALaGrille(Cours cours) {
         LocalDate dateCours = cours.getDate();
-        // Calculer l'index du jour de la semaine par rapport au lundi de la semaine affichée
-        int jourIndex = dateCours.getDayOfWeek().getValue() - DayOfWeek.MONDAY.getValue(); // Lundi=0, Mardi=1, ...
+        int jourIndex = dateCours.getDayOfWeek().getValue() - DayOfWeek.MONDAY.getValue();
 
         if (jourIndex < 0 || jourIndex >= JOURS.length) {
-            System.err.println("Cours hors plage jours ouvrés (L-V): " + cours.getMatiere() + " le " + dateCours.getDayOfWeek() + " (" + dateCours + ")");
+            System.err.println("Cours hors des jours ouvrés: " + cours.getMatiere() + " le " + dateCours.getDayOfWeek() + " (" + dateCours + ")");
             return;
         }
 
-        int debutIndex = trouverIndexHeure30Min(cours.getHeureDebut()); // <--- Supprimez le .format(...)
-        int finIndex = trouverIndexHeure30Min(cours.getHeureFin());
+        int debutIndex = trouverIndexHeure30Min(cours.getHeureDebut().format(timeFormatter));
+        int finIndex = trouverIndexHeure30Min(cours.getHeureFin().format(timeFormatter));
 
         if (debutIndex < 0 || finIndex < 0 || debutIndex >= HEURES_30MIN.length || finIndex > HEURES_30MIN.length) {
-            System.err.println("Heures de cours invalides ou hors plage pour " + cours.getMatiere() + " : " + cours.getHeureDebut() + "-" + cours.getHeureFin());
+            System.err.println("Heures de cours non valides pour " + cours.getMatiere() + " : " + cours.getHeureDebut() + "-" + cours.getHeureFin());
             return;
         }
 
         int span = finIndex - debutIndex;
-        if (span <= 0) span = 1; // Un cours dure au moins une demi-heure
+        if (span <= 0) span = 1;
 
-        // Récupérer la couleur pour la matière, sinon utiliser une couleur par défaut (violet clair)
-        String backgroundColor = matiereColors.getOrDefault(cours.getMatiere(), "#9C27B0"); // Vert par défaut pour les non-définis
+        String backgroundColor = matiereColors.getOrDefault(cours.getMatiere(), "#9400D3");
 
         VBox cellule = new VBox(5);
         cellule.setStyle("-fx-background-color: " + backgroundColor + "; -fx-padding: 5; -fx-background-radius: 5;");
         cellule.setPrefWidth(150);
-        // Calculer la hauteur en fonction du span et de la hauteur d'une cellule d'heure
-        // La hauteur de la cellule d'heure est définie par rc.setPrefHeight(40) + vgap (5) = 45.
-        // Il faut prendre en compte le vgap dans la grille. Si vgap est 5, chaque cellule fait 40+5=45px.
-        cellule.setPrefHeight((span * 40) + ((span - 1) * 5) - 10); // 40px/heure + 5px de vgap entre les heures, -10px de padding global
+        cellule.setPrefHeight((span * 40) + ((span - 1) * 5) - 10);
         cellule.setMaxWidth(Double.MAX_VALUE);
-        cellule.setPadding(new Insets(5)); // Ajouter un padding interne
+        cellule.setPadding(new Insets(5));
 
         Label matiere = new Label(cours.getMatiere());
         matiere.setStyle("-fx-font-weight: bold; -fx-text-fill: white;");
 
-        Label description = new Label(cours.getDescription()); // Afficher la description du cours
+        Label description = new Label(cours.getDescription());
         description.setStyle("-fx-font-size: 11px; -fx-text-fill: white;");
-        description.setWrapText(true); // Permet le retour à la ligne
+        description.setWrapText(true);
 
         Label classe = new Label("Classe: " + cours.getClasse());
         classe.setStyle("-fx-font-size: 11px; -fx-text-fill: white;");
 
-        Label salle = new Label("Salle: " + cours.getSalle()); // Utiliser getSalle() pour l'ID de la salle
+        Label salle = new Label("Salle: " + cours.getSalle());
         salle.setStyle("-fx-text-fill: white; -fx-font-size: 10px;");
 
-        cellule.getChildren().addAll(matiere, description, classe, salle); // Ordre d'affichage dans la cellule
+        cellule.getChildren().addAll(matiere, description, classe, salle);
 
-        // Retirer les cellules vides qui seraient remplacées par le cours
+        cellule.setOnMouseClicked(event -> {
+            if (coursSelectionne != null) {
+                String prevBackgroundColor = matiereColors.getOrDefault(coursSelectionne.getMatiere(), "#9400D3");
+                grilleEmploi.getChildren().stream()
+                        .filter(node -> node instanceof VBox && node.getUserData() instanceof Cours && ((Cours) node.getUserData()).getIdCours() == coursSelectionne.getIdCours())
+                        .findFirst()
+                        .ifPresent(node -> node.setStyle("-fx-background-color: " + prevBackgroundColor + "; -fx-padding: 5; -fx-background-radius: 5;"));
+            }
+            coursSelectionne = cours;
+            cellule.setStyle("-fx-background-color: #95C6B2; -fx-padding: 5; -fx-background-radius: 5; -fx-border-color: #9400D3; -fx-border-width: 2;");
+            if (supprimerCoursButton != null) {
+                supprimerCoursButton.setDisable(false);
+            }
+            System.out.println("Cours sélectionné pour suppression : " + cours.getMatiere() + " (ID: " + cours.getIdCours() + ")");
+        });
+        cellule.setUserData(cours);
+
         for (int i = 0; i < span; i++) {
             int targetRow = debutIndex + 1 + i;
             int targetCol = jourIndex + 1;
@@ -317,7 +331,7 @@ public class AccueilProfController {
         }
 
         grilleEmploi.add(cellule, jourIndex + 1, debutIndex + 1);
-        GridPane.setRowSpan(cellule, span); // Étendre le cours sur plusieurs lignes
+        GridPane.setRowSpan(cellule, span);
     }
 
 
@@ -332,8 +346,7 @@ public class AccueilProfController {
     }
 
     private boolean estDansLaSemaineActuelle(LocalDate date) {
-        // La date du cours doit être entre le lundi (inclus) et le vendredi (inclus) de la semaine affichée
-        LocalDate finSemaineActuelle = premierJourSemaineActuelle.plusDays(4); // Lundi + 4 jours = Vendredi
+        LocalDate finSemaineActuelle = premierJourSemaineActuelle.plusDays(4);
         return !date.isBefore(premierJourSemaineActuelle) && !date.isAfter(finSemaineActuelle);
     }
 
@@ -341,7 +354,7 @@ public class AccueilProfController {
     private VBox creerCelluleVide() {
         VBox cellule = new VBox();
         cellule.setStyle("-fx-border-color: #ddd; -fx-background-color: #fafafa;");
-        cellule.setPrefHeight(40); // Doit correspondre à la RowConstraints pour une cellule de base
+        cellule.setPrefHeight(40);
         return cellule;
     }
 
@@ -349,9 +362,8 @@ public class AccueilProfController {
         WeekFields weekFields = WeekFields.of(Locale.getDefault());
         int numeroSemaine = dateActuelle.get(weekFields.weekOfWeekBasedYear());
 
-        // Afficher la plage de dates de la semaine
         LocalDate debutSemaine = premierJourSemaineActuelle;
-        LocalDate finSemaine = premierJourSemaineActuelle.plusDays(4); // Vendredi
+        LocalDate finSemaine = premierJourSemaineActuelle.plusDays(4);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM");
         labelSemaine.setText("Semaine du " + debutSemaine.format(formatter) + " au " + finSemaine.format(formatter) + " (Semaine " + numeroSemaine + ")");
     }
@@ -359,7 +371,7 @@ public class AccueilProfController {
     private void afficherStats() {
         long nbCoursCetteSemaine = listeCours.stream()
                 .filter(cours -> estDansLaSemaineActuelle(cours.getDate()))
-                .filter(cours -> { // Appliquer les filtres pour les stats aussi
+                .filter(cours -> {
                     String selectedClasse = filtreClasse.getValue();
                     String selectedMatiere = filtreMatiere.getValue();
                     boolean matchClasse = (selectedClasse == null || selectedClasse.equals("Toutes les classes") || selectedClasse.equals(cours.getClasse()));
@@ -374,7 +386,7 @@ public class AccueilProfController {
     @FXML
     private void semainePrecedente() {
         dateActuelle = dateActuelle.minusWeeks(1);
-        premierJourSemaineActuelle = dateActuelle.with(DayOfWeek.MONDAY); // Mettre à jour le lundi de la semaine
+        premierJourSemaineActuelle = dateActuelle.with(DayOfWeek.MONDAY);
         afficherSemaine();
         actualiserCours();
     }
@@ -382,23 +394,23 @@ public class AccueilProfController {
     @FXML
     private void semaineSuivante() {
         dateActuelle = dateActuelle.plusWeeks(1);
-        premierJourSemaineActuelle = dateActuelle.with(DayOfWeek.MONDAY); // Mettre à jour le lundi de la semaine
+        premierJourSemaineActuelle = dateActuelle.with(DayOfWeek.MONDAY);
         afficherSemaine();
         actualiserCours();
     }
 
     @FXML
     private void ajouterCours() {
-        System.out.println("DEBUG (AccueilProfController): Appel de NavigationUtil.ouvrirFenetreModale pour créer un cours.");
+        System.out.println("Appel de NavigationUtil.ouvrirFenetreModale pour créer un cours.");
         NavigationUtil.ouvrirFenetreModale(
                 "/projet/fxml/creer_cours_professeur.fxml",
                 "Créer un Nouveau Cours",
                 (Stage) grilleEmploi.getScene().getWindow(),
                 utilisateurConnecte
         );
-        System.out.println("DEBUG (AccueilProfController): Fenêtre de création de cours fermée. Rechargement des cours.");
-        chargerCours(); // Recharge les données au cas où un nouveau cours aurait été ajouté
-        actualiserCours(); // Met à jour l'affichage de l'emploi du temps
+        System.out.println("Fenetre de création de cours fermée. Rechargement des cours.");
+        chargerCours();
+        actualiserCours();
     }
 
     @FXML
@@ -406,5 +418,115 @@ public class AccueilProfController {
         System.out.println("Déconnexion de l'utilisateur.");
         Stage stageActuel = (Stage) ((Button) event.getSource()).getScene().getWindow();
         NavigationUtil.changerScene(stageActuel, "/projet/fxml/login.fxml", "Connexion", null);
+    }
+
+    @FXML
+    private void supprimerCours() {
+        if (coursSelectionne == null) {
+            showAlert(Alert.AlertType.WARNING, "Aucun cours sélectionné", "Veuillez sélectionner un cours à supprimer dans l'emploi du temps.");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation de suppression");
+        alert.setHeaderText("Supprimer le cours : " + coursSelectionne.getMatiere() + " le " +
+                coursSelectionne.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
+                " de " + coursSelectionne.getHeureDebut().format(timeFormatter) +
+                " à " + coursSelectionne.getHeureFin().format(timeFormatter) +
+                " en salle " + coursSelectionne.getSalle() + " ?");
+        alert.setContentText("Cette action est irréversible.");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                CRUDcsvControllerProf.supprimerLigne(CHEMIN_COURS, 0, String.valueOf(coursSelectionne.getIdCours()));
+                System.out.println("Cours supprimé: ID " + coursSelectionne.getIdCours());
+
+                genererNotificationsAnnulationCours(coursSelectionne);
+
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Cours supprimé avec succès !");
+                chargerCours();
+                actualiserCours();
+                coursSelectionne = null;
+                if (supprimerCoursButton != null) {
+                    supprimerCoursButton.setDisable(true);
+                }
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur de suppression", "Impossible de supprimer le cours : " + e.getMessage());
+                System.err.println("Erreur suppression cours: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void genererNotificationsAnnulationCours(Cours coursAnnule) {
+        String messageNotification = String.format("Le cours de %s prévu le %s de %s à %s en salle %s pour votre classe %s a été annulé.",
+                coursAnnule.getMatiere(),
+                coursAnnule.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                coursAnnule.getHeureDebut().format(timeFormatter),
+                coursAnnule.getHeureFin().format(timeFormatter),
+                coursAnnule.getSalle(),
+                coursAnnule.getClasse());
+
+        try {
+            List<String[]> lignesUtilisateurs = CRUDcsvControllerProf.lire(CHEMIN_UTILISATEURS);
+            int startIndexUtilisateurs = (lignesUtilisateurs.size() > 0 && lignesUtilisateurs.get(0).length > 0 && lignesUtilisateurs.get(0)[0].equalsIgnoreCase("idUtilisateur")) ? 1 : 0;
+
+            for (int i = startIndexUtilisateurs; i < lignesUtilisateurs.size(); i++) {
+                String[] userData = lignesUtilisateurs.get(i);
+                if (userData.length > 6 && userData[5].trim().equalsIgnoreCase("ETUDIANT")) {
+                    String eleveClasse = userData[6].trim().replace("\"", "");
+
+                    if (eleveClasse.equalsIgnoreCase(coursAnnule.getClasse())) {
+                        int idEleve = Integer.parseInt(userData[0].trim());
+
+                        int idNotification = generateUniqueNotificationId();
+                        projet.models.Notification newNotification = new projet.models.Notification(
+                                idNotification,
+                                java.time.LocalDateTime.now(),
+                                messageNotification,
+                                "AnnulationCours",
+                                "NON_LUE",
+                                coursAnnule.getEnseignantId(),
+                                idEleve,
+                                "ETUDIANT",
+                                coursAnnule.getIdCours()
+                        );
+                        CRUDNotification.ajouterNotification(CHEMIN_NOTIFICATIONS, newNotification);
+                        System.out.println("Notification d'annulation générée pour l'élève ID: " + idEleve + " pour le cours ID: " + coursAnnule.getIdCours());
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur lors de la lecture des utilisateurs ou de l'écriture des notifications d'annulation: " + e.getMessage());
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            System.err.println("Erreur de format numérique lors de la lecture des IDs d'utilisateur pour notification d'annulation: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private int generateUniqueNotificationId() {
+        int maxId = 0;
+        try {
+            List<projet.models.Notification> notifications = CRUDNotification.lireNotifications(CHEMIN_NOTIFICATIONS);
+            for (projet.models.Notification notif : notifications) {
+                if (notif.getIdNotification() > maxId) {
+                    maxId = notif.getIdNotification();
+                }
+            }
+            return maxId + 1;
+        } catch (IOException e) {
+            System.err.println("Impossible de lire le fichier des notifications pour générer un ID. Retourne 1 si le fichier n'existe pas encore: " + e.getMessage());
+            return 1;
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

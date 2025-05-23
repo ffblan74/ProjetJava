@@ -3,8 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Text?>
-<?import java.lang.String?>
+
 
 <VBox spacing="15" alignment="TOP_CENTER"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
@@ -40,7 +39,7 @@
         <Label text="Heure Fin :" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
         <TextField fx:id="heureFinField" promptText="Ex: 09:30" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-        <Label text="Salle ID :" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <Label text="Salle :" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
         <ComboBox fx:id="salleIdComboBox" promptText="Sélectionner une salle" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
         <Label text="Description (optionnel) :" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
@@ -50,9 +49,9 @@
     </GridPane>
 
     <HBox spacing="15" alignment="CENTER">
-        <Button text="💾 Enregistrer Cours" onAction="#enregistrerCours"
+        <Button text="Enregistrer Cours" onAction="#enregistrerCours"
                 style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-        <Button text="❌ Annuler" onAction="#annuler"
+        <Button text="Annuler" onAction="#annuler"
                 style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 15; -fx-background-radius: 5;"/>
     </HBox>
 

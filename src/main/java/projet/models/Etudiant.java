@@ -17,15 +17,4 @@ public class Etudiant extends Utilisateur {
         return groupe;
     }
 
-    public void setGroupe(String groupe) {
-        this.groupe = groupe;
-    }
-
-    public int getEmploiDuTempsId() {
-        return emploiDuTempsId;
-    }
-
-    public void setEmploiDuTempsId(int emploiDuTempsId) {
-        this.emploiDuTempsId = emploiDuTempsId;
-    }
 }

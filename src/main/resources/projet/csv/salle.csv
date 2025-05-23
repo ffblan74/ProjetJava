@@ -1,5 +1,10 @@
-idSalle;numeroSalle;capacite;localisation;materielnom;materieldescription
-1;A101;50;Bâtiment A;Projecteur;Epson HD
-3;32432;324;batiment c;fdsq;fds
-5;3454;34;PARIS;rien;dutout
-6;4;2;fdqs;fdsq;fdsq
+idSalle;numeroSalle;capacite;localisation;materielNom;materielDescription
+1;A101;30;Bâtiment A;Projecteur;Full HD
+2;A102;25;Bâtiment A;Ordinateurs;15 postes
+3;B201;40;Bâtiment B;Visioconférence;Kit complet
+4;B202;20;Bâtiment B;Tablettes;10 tablettes
+5;C301;50;Bâtiment C;Tableau Blanc;Interactif
+6;C302;35;Bâtiment C;Imprimante 3D;Grande taille
+7;A103;28;Bâtiment A;Kits Robotique;LEGO Mindstorms
+8;B203;22;Bâtiment B;Systèmes Embarqués;Raspberry Pi
+9;C303;33;Bâtiment C;Salle des profs;Canapé;Doux et Moelleux

@@ -1,19 +1,38 @@
 idUtilisateur;nom;prenom;email;motDePasse;role;groupe;matiereEnseignee
-2;Morel;Pauline;pauline.morel@email.com;password456;ENSEIGNANT;;["Mathématiques","Physique"]
-4;admin;admin;admin@;admin;ADMINISTRATEUR;;
-5;test;test;test@test.com;fjlkqsmfjqsdlkf345;ENSEIGNANT;;
-6;fdsq;fdqsfdsq;fdsq@fd.com;JOKLJHEKFkjldsf;ETUDIANT;A;
-9;test;test;tes@d.com;stekljfoemzkl;ETUDIANT;C;
-10;fdsqjklm;fdsqjklm;fdsqlm@fjkdsqlm.com;fjdskqlmqmslkdfj;ADMINISTRATEUR;;
-11;utilisateur;utilisateur;fdqmljfdklsmq@fds.com;fdsqfdsq;ENSEIGNANT;;
-12;prof;prof;prof@;prof;ENSEIGNANT;;["Mathématiques","Physique"]
-14;fdsq;fdqs;fdsq@f.com;fdsqjoikelz;ETUDIANT;C;;
-15;fdsq;fdsq;fdsq@f.com;fdlskmqfj;ETUDIANT;C;;
-16;fdsq;fdsq;fdsq@f.com;fjkqsdlmfjqdlsm;ETUDIANT;E;;
-17;fdsq;fdsq;fdsq@d.com;fdsqazreaz;ENSEIGNANT;;;
-18;xxxxxx;fdsqerfvdcs;fdsq@d.com;fdsqfdsqfezf;ENSEIGNANT;;;
-19;fezfdsxcwdeddddd;fdsqfezds;fez@d.com;fsqfezsd;ENSEIGNANT;;;
-20;fezsfdvazeds;fezsdfgez;fez@d.com;zefvsd;ETUDIANT;C;;
-21;zzzzzz;fdsq;fdsq@d.com;fafoiklrzjlm;ETUDIANT;C;;
-22;QQQ;qqq;qqqd@d.com;olkjflkzefdsq;ENSEIGNANT;;;
-23;ffff;fdsq;eleve@;eleve;ETUDIANT;L1;;
+1;Baton;Baton;admin@;admin;ADMINISTRATEUR;;
+2;Danré;Hippolyte;prof@;prof;ENSEIGNANT;;["Mathématiques","Cybersécurité"]
+3;Le Pen;Marine;m.lepen@example.com;profpass;ENSEIGNANT;;["Anglais","Développement Logiciel"]
+4;Mélenchon;Jean-Luc;jl.melenchon@example.com;profpass;ENSEIGNANT;;["Algorithmique","Intelligence Artificielle"]
+5;Pécresse;Valérie;v.pecresse@example.com;profpass;ENSEIGNANT;;["Traitement du Signal","Électronique"]
+6;Zemmour;Éric;e.zemmour@example.com;profpass;ENSEIGNANT;;["Réseaux","Base de Données"]
+7;Blanchier;Félix;eleve@;eleve;ETUDIANT;A1;
+8;Sy;Omar;o.sy@example.com;eleve;ETUDIANT;A1;
+9;Cotillard;Marion;m.cotillard@example.com;eleve;ETUDIANT;A1;
+10;Cassel;Vincent;v.cassel@example.com;eleve;ETUDIANT;A1;
+11;Ulliel;Gaspard;g.ulliel@example.com;eleve;ETUDIANT;A1;
+12;Gainsbourg;Charlotte;c.gainsbourg@example.com;eleve;ETUDIANT;A2;
+13;Kiberlain;Sandrine;s.kiberlain@example.com;eleve;ETUDIANT;A2;
+14;Duris;Romain;r.duris@example.com;eleve;ETUDIANT;A2;
+15;Lellouche;Gilles;g.lellouche@example.com;eleve;ETUDIANT;A2;
+16;Efira;Virginie;v.efira@example.com;eleve;ETUDIANT;A2;
+17;Canet;Guillaume;g.canet@example.com;eleve;ETUDIANT;A3;
+18;Cluzet;François;f.cluzet@example.com;eleve;ETUDIANT;A3;
+19;Forestier;Sara;s.forestier@example.com;eleve;ETUDIANT;A3;
+20;Maïwenn;Le Besco;maiwenn.lb@example.com;eleve;ETUDIANT;A3;
+21;Niney;Pierre;p.niney@example.com;eleve;ETUDIANT;A3;
+22;Poupaud;Melvil;m.poupaud@example.com;eleve;ETUDIANT;P1;
+23;Ledoyen;Virginie;v.ledoyen@example.com;eleve;ETUDIANT;P1;
+24;De France;Cécile;c.defrance@example.com;eleve;ETUDIANT;P1;
+25;Ardant;Fanny;f.ardant@example.com;eleve;ETUDIANT;P1;
+26;Lavanant;Chantal;c.lavanant@example.com;eleve;ETUDIANT;P1;
+27;Zylberstein;Elsa;e.zylberstein@example.com;eleve;ETUDIANT;P2;
+28;Giraudeau;Bernard;b.giraudeau@example.com;eleve;ETUDIANT;P2;
+29;Sagnier;Ludivine;l.sagnier@example.com;eleve;ETUDIANT;P2;
+30;Bacri;Jean-Pierre;jp.bacri@example.com;eleve;ETUDIANT;P2;
+31;Jaoui;Agnès;a.jaoui@example.com;eleve;ETUDIANT;P2;
+32;Angel;Nicolas;n.angel@example.com;eleve;ETUDIANT;A1;
+33;Moreau;Jeanne;j.moreau@example.com;eleve;ETUDIANT;A1;
+34;Depardieu;Gérard;g.depardieu@example.com;eleve;ETUDIANT;A2;
+35;Adjani;Isabelle;i.adjani@example.com;eleve;ETUDIANT;A2;
+36;Piccoli;Michel;m.piccoli@example.com;eleve;ETUDIANT;A3;
+37;Huppert;Isabelle;i.huppert@example.com;eleve;ETUDIANT;A3;

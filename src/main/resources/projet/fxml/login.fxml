@@ -6,19 +6,31 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
-<VBox alignment="CENTER" prefHeight="200.0" prefWidth="300.0" spacing="10.0"
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="350.0" spacing="15.0"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="projet.controleurs.LoginController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
-    <Label text="Connexion" style="-fx-font-size: 20;"/>
-    <Label text="Identifiant:"/>
-    <TextField fx:id="emailField" promptText="prenom.nom@example.fr"/>
-    <Label text="Mot de passe:"/>
-    <PasswordField fx:id="passwordField" promptText="Votre mot de passe"/>
-    <Button fx:id="loginButton" text="Se connecter" onAction="#handleLogin"/>
-    <!-- Ajout du label pour les messages d'erreur -->
-    <Label fx:id="errorLabel" text=""/>
+      fx:controller="projet.controleurs.LoginController"
+      style="-fx-background-color: #e8f5e9; -fx-background-radius: 10; -fx-border-color: #d1c4e9; -fx-border-width: 2; -fx-border-radius: 10;"> <padding>
+    <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>
+</padding>
+
+    <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+        <image>
+            <Image url="@../images/SuperM.png" />
+        </image>
+        <VBox.margin>
+            <Insets bottom="10.0"/>
+        </VBox.margin>
+    </ImageView>
+
+    <Label text="Connexion" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #6a1b9a;"/> <Label text="Identifiant:" style="-fx-font-size: 14px; -fx-text-fill: #424242;"/>
+    <TextField fx:id="emailField" promptText="prenom.nom@example.fr"
+               style="-fx-background-color: white; -fx-border-color: #b39ddb; -fx-border-radius: 5; -fx-padding: 8px;"/> <Label text="Mot de passe:" style="-fx-font-size: 14px; -fx-text-fill: #424242;"/>
+    <PasswordField fx:id="passwordField" promptText="Votre mot de passe"
+                   style="-fx-background-color: white; -fx-border-color: #b39ddb; -fx-border-radius: 5; -fx-padding: 8px;"/> <Button fx:id="loginButton" text="Se connecter" onAction="#handleLogin"
+                                                                                                                                                                                                                                                                                                          style="-fx-background-color: #9c27b0; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8px 20px;"/>
+
+    <Label fx:id="errorLabel" text="" style="-fx-text-fill: #d32f2f; -fx-font-weight: bold; -fx-font-size: 12px;"/>
 </VBox>

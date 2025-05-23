@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projet.controleurs.admin.EmploiDuTempsController">
+    <children>
+        <VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="1200.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="10.0" left="10.0"  right="10.0" top="10.0" />
+            </padding>
+            <children>
+                <fx:include source="admin-header.fxml" />
+
+                <Label text="Emploi du Temps Global (Admin)" style="-fx-text-fill: purple;">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets top="10.0" />
+                    </VBox.margin>
+                </Label>
+
+                <HBox alignment="CENTER" spacing="20.0" VBox.vgrow="NEVER">
+                    <children>
+                        <Button onAction="#handlePreviousWeek" text="&lt; Semaine Précédente" style="-fx-text-fill: lightgreen; -fx-background-color: #4CAF50; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px 20px;"/>
+                        <Button onAction="#handleToday" text="Aujourd'hui" style="-fx-text-fill: lightgreen; -fx-background-color: #4CAF50; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px 20px;"/>
+                        <Button onAction="#handleNextWeek" text="Semaine Suivante &gt;" style="-fx-text-fill: lightgreen; -fx-background-color: #4CAF50; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px 20px;"/>
+                        <Label fx:id="currentWeekLabel" text="[Date Début] - [Date Fin]" style="-fx-text-fill: purple;"/>
+                    </children>
+                </HBox>
+
+                <HBox VBox.vgrow="ALWAYS" spacing="10.0">
+                    <GridPane fx:id="calendarGrid" alignment="TOP_CENTER" hgap="5.0" HBox.hgrow="ALWAYS" vgap="5.0" style="-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-width: 1;">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="20.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="20.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="20.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="20.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="20.0" />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints vgrow="NEVER" />
+                            <RowConstraints vgrow="ALWAYS" />
+                        </rowConstraints>
+                        <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </padding>
+                    </GridPane>
+
+                    <VBox alignment="TOP_CENTER" spacing="10.0" HBox.hgrow="NEVER" prefWidth="180.0">
+                        <padding>
+                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                        </padding>
+                        <children>
+                            <Label text="Actions" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: purple;"/>
+                            <Button onAction="#handleAjouterCours" text="Ajouter un Cours" prefWidth="150.0" style="-fx-text-fill: lightgreen; -fx-background-color: #4CAF50; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px 20px;"/>
+                            <Button fx:id="modifierCoursButton" onAction="#handleModifierCours" text="Modifier un Cours" prefWidth="150.0" style="-fx-text-fill: lightgreen; -fx-background-color: #4CAF50; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px 20px;"/>
+                            <Button fx:id="supprimerCoursButton" onAction="#handleSupprimerCours" text="Supprimer un Cours" prefWidth="150.0" style="-fx-text-fill: white; -fx-background-color: #f44336; -fx-font-weight: bold; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 10px 20px;"/>
+                        </children>
+                    </VBox>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+
+    <fx:define>
+        <VBox fx:id="popupContent" alignment="CENTER" spacing="5" style="-fx-background-color: #f0f0f0; -fx-border-color: #ccc; -fx-border-width: 1; -fx-padding: 10;">
+            <Button fx:id="popupModifierButton" text="Modifier le cours" onAction="#handlePopupModifier" prefWidth="150"/>
+            <Button fx:id="popupSupprimerButton" text="Supprimer le cours" onAction="#handlePopupSupprimer" prefWidth="150"/>
+        </VBox>
+    </fx:define>
+</AnchorPane>
